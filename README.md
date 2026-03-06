@@ -1,4 +1,4 @@
-# Gathering Server
+# Gathering-Server
 
 A backend server for a community gathering and meetup platform. Users can create/join gatherings, schedule meetings, chat in real-time, and receive push notifications.
 
@@ -7,60 +7,53 @@ A backend server for a community gathering and meetup platform. Users can create
 ## ⚙ Tech Stack
 
 ### Back-end
-<div>
-<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Java.png?raw=true" width="80">
-<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/SpringBoot.png?raw=true" width="80">
-<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/SpringSecurity.png?raw=true" width="80">
-<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/SpringDataJPA.png?raw=true" width="80">
-<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Mysql.png?raw=true" width="80">
-</div>
-
 - **Java 21** / **Spring Boot 3.4.2**
-- **Spring Security** + JWT Authentication
-- **Spring Data JPA** + QueryDSL
-- **MySQL** / **Redis** (caching & session)
+- **Spring Security** + JWT Authentication (JJWT 0.11.5)
+- **Spring Data JPA** + MySQL
+- **Redis** (caching & session)
 - **RabbitMQ** (async chat messaging)
 - **Firebase Cloud Messaging** (push notifications)
 - **WebSocket** (STOMP over SockJS)
 - **AWS S3** (image storage)
 
 ### Infra
-<div>
-<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/AWSEC2.png?raw=true" width="80">
-<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Mysql.png?raw=true" width="80">
-</div>
-
 - **AWS EC2** (deployment)
-- **Docker** (containerization)
+- **Docker** (containerization, Amazon Corretto 21 Alpine)
 - **GitHub Actions** (CI/CD)
 
 ### Tools
-<div>
-<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Github.png?raw=true" width="80">
-<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Notion.png?raw=true" width="80">
-</div>
+- **GitHub** (version control)
+- **Notion** (documentation)
 
 <br />
 
 ## 🛠️ Project Architecture
 
+### Single-Module Structure
 ```
 gathering-server/
-├── api/             # REST controllers, security, WebSocket config
-├── domain/          # JPA entities and domain models
-├── infra/           # Repositories (JPA, QueryDSL, JDBC), Redis, FCM config
-├── util/            # Pagination utilities and helpers
-├── common/          # Shared configurations
-├── mail-server/     # Email service module
-└── src/             # Core services, business logic, RabbitMQ config
+└── src/main/java/spring/myproject/
+    ├── controller/      # 13 REST controllers
+    ├── service/         # 14 business logic services
+    ├── entity/          # 22 JPA entities
+    ├── repository/      # Data access (JPA repositories)
+    ├── dto/             # Request/Response DTOs
+    ├── config/          # Security, WebSocket, Async, Redis, ShedLock configs
+    ├── common/          # Filters, handlers, exceptions, annotations, utilities
+    ├── rabbitmq/        # Event-driven chat messaging (publisher/consumer)
+    └── utils/           # Helpers and mappers
 ```
 
+### Layered Architecture
 ```
-Controller → Service → Repository → Database (MySQL)
-                ↕            ↕
-           RabbitMQ       QueryDSL
-           Firebase        Redis
-            AWS S3
+Client (REST / WebSocket)
+         │
+    Controller ──→ Service ──→ Repository ──→ MySQL
+         │            │
+    WebSocket    ┌────┴────┐
+    (STOMP)      │         │
+              RabbitMQ   AWS S3
+              Firebase   Redis
 ```
 
 <br />
@@ -72,13 +65,15 @@ Controller → Service → Repository → Database (MySQL)
 | **User Management** | Registration, JWT auth, email verification, profile management |
 | **Gatherings** | Create/join community groups with category filtering & pagination |
 | **Meetings** | Schedule events within gatherings with attendance tracking |
-| **Real-time Chat** | WebSocket (STOMP) chat rooms with RabbitMQ message routing & read status |
-| **Push Notifications** | Firebase FCM with topic-based subscriptions |
-| **Board** | Discussion posts with image attachments |
-| **Likes & Recommendations** | Like gatherings, get top-10 recommendations |
+| **Real-time Chat** | WebSocket (STOMP) chat rooms with RabbitMQ message routing & read status tracking |
+| **Push Notifications** | Firebase FCM with topic-based subscriptions per gathering |
+| **Board** | Discussion posts with multiple image attachments |
+| **Likes & Recommendations** | Like gatherings, daily-scored top-10 recommendations |
 | **Image Upload** | AWS S3 integration for profile, gathering, and board images |
-| **Alarms** | User notification system with checked/unchecked status |
+| **Alarms** | User notification system with checked/unchecked filtering |
 | **SSE** | Server-Sent Events for real-time failure notifications |
+| **Distributed Scheduling** | ShedLock for safe scheduled task execution across instances |
+| **Caching** | Redis-based caching with scheduled daily eviction |
 
 <br />
 
@@ -88,14 +83,14 @@ Controller → Service → Repository → Database (MySQL)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/auth/sign-up` | Register new user (multipart) |
-| POST | `/auth/sign-in` | Login |
+| POST | `/auth/sign-in` | Login (returns JWT + refresh cookie) |
 | POST | `/auth/id-check` | Check username availability |
 | POST | `/auth/nickname-check` | Check nickname availability |
 | PUT | `/auth/update/{userId}` | Update profile (multipart) |
 | GET | `/auth/user/{userId}` | Get user details |
 | POST | `/auth/email-certification` | Send email verification |
 | POST | `/auth/check-certification` | Verify email code |
-| POST | `/auth/generateToken` | Refresh JWT token |
+| POST | `/auth/generateToken` | Refresh JWT from cookie |
 
 ### Gatherings (`/gathering`)
 | Method | Endpoint | Description |
@@ -105,7 +100,7 @@ Controller → Service → Repository → Database (MySQL)
 | GET | `/gathering/{id}` | Get gathering details |
 | GET | `/gatherings` | List all gatherings |
 | GET | `/gathering?category&pageNum&pageSize` | Filter by category (paginated) |
-| GET | `/gathering/participated/{id}` | List participants |
+| GET | `/gathering/participated/{id}` | List participants (paginated) |
 | POST | `/gatherings/like` | Get liked gatherings (paginated) |
 
 ### Enrollment
@@ -123,6 +118,10 @@ Controller → Service → Repository → Database (MySQL)
 | PUT | `/gathering/{id}/meeting/{meetingId}` | Update a meeting |
 | DELETE | `/gathering/{id}/meeting/{meetingId}` | Delete a meeting |
 | GET | `/gathering/{id}/meetings` | List meetings (paginated) |
+
+### Attendance
+| Method | Endpoint | Description |
+|--------|----------|-------------|
 | POST | `/gathering/{id}/meeting/{meetingId}/attend` | Attend a meeting |
 | POST | `/gathering/{id}/meeting/{meetingId}/disAttend` | Cancel attendance |
 
@@ -146,7 +145,7 @@ Controller → Service → Repository → Database (MySQL)
 ### Board (`/gathering/{id}/board`)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/gathering/{id}/board` | Create a post (multipart) |
+| POST | `/gathering/{id}/board` | Create a post (multipart, multiple files) |
 | GET | `/gathering/{id}/board/{boardId}` | Get a post |
 | GET | `/gathering/{id}/boards` | List posts (paginated) |
 
@@ -160,15 +159,15 @@ Controller → Service → Repository → Database (MySQL)
 ### Alarms (`/alarm`)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/alarm` | Get alarms |
+| GET | `/alarm?page&checked` | Get alarms (filtered) |
 | PATCH | `/alarm/{id}` | Mark as checked |
 | DELETE | `/alarm/{id}` | Delete alarm |
 
 ### Images
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/image/{imageUrl}` | Download image |
-| GET | `/gathering/{id}/image` | Get gathering images |
+| GET | `/image/{imageUrl}` | Download image from S3 |
+| GET | `/gathering/{id}/image` | Get gathering images (paginated) |
 
 ### SSE & Health
 | Method | Endpoint | Description |
@@ -186,6 +185,7 @@ User ──┬── Enrollment ── Gathering ──┬── Meeting ── 
        │                             ├── ChatRoom ── ChatParticipant ── ChatMessage ── ReadStatus
        │                             ├── Board ── Image
        │                             ├── Like
+       │                             ├── Recommend
        │                             ├── Topic ── UserTopic / FCMTokenTopic
        │                             └── Category
        ├── FCMToken
@@ -193,7 +193,34 @@ User ──┬── Enrollment ── Gathering ──┬── Meeting ── 
        └── Certification
 ```
 
-**22 entities** including: User, Gathering, Meeting, Enrollment, Attend, ChatRoom, ChatMessage, ChatParticipant, ReadStatus, Board, Image, Like, Alarm, Recommend, Category, Certification, FCMToken, Topic, UserTopic, FCMTokenTopic, Fail
+**22 entities:** User, Gathering, Meeting, Enrollment, Attend, ChatRoom, ChatMessage, ChatParticipant, ReadStatus, Board, Image, Like, Alarm, Recommend, Category, Certification, FCMToken, Topic, UserTopic, FCMTokenTopic, Fail, Role (enum)
+
+<br />
+
+## 🔌 Real-time Chat Architecture
+
+```
+Client (STOMP)
+    │
+    ▼
+StompController (@MessageMapping)
+    │
+    ▼
+SendMessageEventHandler
+    │
+    ▼
+ChatPublisher ──→ RabbitMQ (topic_exchange / chat_queue)
+    │
+    ▼
+ChatConsumer (@RabbitListener)
+    │
+    ▼
+SimpMessageSendingOperations ──→ WebSocket broadcast to /chatRoom/{id}
+```
+
+- **Queue:** `chat_queue`
+- **Exchange:** `topic_exchange` (TopicExchange)
+- **Routing Key:** `chat`
 
 <br />
 
@@ -213,10 +240,10 @@ git clone https://github.com/<your-username>/gathering-server.git
 cd gathering-server
 
 # Configure application.yml with your DB, Redis, RabbitMQ, AWS, Firebase credentials
-# Place firebase service account JSON in resources
+# Place Firebase service account JSON in src/main/resources/
 
 ./gradlew clean build -x test
-java -jar api/build/libs/*.jar
+java -jar build/libs/*SNAPSHOT.jar
 ```
 
 ### Docker
@@ -232,10 +259,6 @@ docker run -p 80:80 gathering-server
 CI/CD via GitHub Actions (`.github/workflows/deploy.yml`):
 1. Triggers on push to `master`
 2. Builds with JDK 21 (Amazon Corretto)
-3. Injects secrets for config files (application.yml, AWS, Firebase)
+3. Injects secrets for config files (application.yml, application-aws.yml, Firebase JSON)
 4. Deploys to AWS EC2 via SCP + SSH
 
-<br />
-
-## 💁‍♂️ Team
-<img src="https://github.com/user-attachments/assets/7671baa8-20d3-4eeb-b3f7-e23bab3eb5be" width="200" height="300"/>
