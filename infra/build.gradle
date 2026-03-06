@@ -1,0 +1,5 @@
+dependencies {
+    implementation project(':domain')
+    implementation project(':util')
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+}

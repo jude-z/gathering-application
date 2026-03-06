@@ -5,3 +5,6 @@ include 'domain'
 include 'api'
 include 'util'
 include 'mail-server'
+include 'chat-server'
+
+include 'common'

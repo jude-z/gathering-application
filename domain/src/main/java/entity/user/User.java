@@ -6,13 +6,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
-import requeset.user.UserRequestDto;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import static requeset.user.UserRequestDto.*;
 
 
 @Getter
@@ -39,27 +35,23 @@ public class User implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "image_id")
     private Image profileImage;
-    private String refreshToken;
     @OneToMany(mappedBy = "user")
     @Builder.Default
     private List<FCMToken> tokens = new ArrayList<>();
 
-    public void changeRefreshToken(String refreshToken){
-        this.refreshToken = refreshToken;
-    }
     public void changeProfileImage(Image profileImage){
         this.profileImage = profileImage;
     }
 
-    public void change(UpdateRequest updateRequest, PasswordEncoder passwordEncoder){
-        this.email = updateRequest.getEmail();
-        this.address = updateRequest.getAddress();
-        this.age = updateRequest.getAge();
-        this.hobby = updateRequest.getHobby();
-        this.nickname = updateRequest.getNickname();
-        if(StringUtils.hasText(updateRequest.getPassword())){
-            this.password = passwordEncoder.encode(updateRequest.getPassword());
-        }
-    }
+//    public void change(UpdateRequest updateRequest, PasswordEncoder passwordEncoder){
+//        this.email = updateRequest.getEmail();
+//        this.address = updateRequest.getAddress();
+//        this.age = updateRequest.getAge();
+//        this.hobby = updateRequest.getHobby();
+//        this.nickname = updateRequest.getNickname();
+//        if(StringUtils.hasText(updateRequest.getPassword())){
+//            this.password = passwordEncoder.encode(updateRequest.getPassword());
+//        }
+//    }
 
 }
