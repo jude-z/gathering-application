@@ -36,6 +36,8 @@ public enum Status {
     UPLOAD_FAIL("UF", "Upload Fail", HttpStatus.INTERNAL_SERVER_ERROR),
     DB_ERROR("DBE", "Database Error", HttpStatus.INTERNAL_SERVER_ERROR),
     FAIL_MESSAGE("FM", "Fail Messaging From SMTP", HttpStatus.INTERNAL_SERVER_ERROR),
+    NOT_FOUND_TOPIC("NFT", "Not Found Topic", HttpStatus.NOT_FOUND),
+    ALREADY_SUBSCRIBE_TOPIC("AST", "Already Subscribe Topic", HttpStatus.CONFLICT),
     METHOD_NOT_ALLOWED("MNA", "Method Not Allowed", HttpStatus.METHOD_NOT_ALLOWED);
 
     private final String code;

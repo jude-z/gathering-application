@@ -1,6 +1,6 @@
 package api.controller.board;
 
-import api.common.annotation.Username;
+import api.common.resolver.annotation.Username;
 import api.response.ApiResponse;
 import api.service.board.BoardService;
 import lombok.RequiredArgsConstructor;

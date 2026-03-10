@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Entity
 @Table(name = "certification")
 public class Certification {
@@ -19,6 +17,12 @@ public class Certification {
     private Long id;
     private String email;
     private String certification;
+
+    @Builder
+    private Certification(String email, String certification) {
+        this.email = email;
+        this.certification = certification;
+    }
 
     public static Certification of(String email, String certification) {
         return Certification.builder()

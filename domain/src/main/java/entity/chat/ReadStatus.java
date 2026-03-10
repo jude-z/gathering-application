@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Getter
 @Table(name = "read_status")
 public class ReadStatus {
@@ -23,4 +21,11 @@ public class ReadStatus {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_message_id")
     private ChatMessage chatMessage;
+
+    @Builder
+    public ReadStatus(Boolean status, ChatParticipant chatParticipant, ChatMessage chatMessage) {
+        this.status = status;
+        this.chatParticipant = chatParticipant;
+        this.chatMessage = chatMessage;
+    }
 }

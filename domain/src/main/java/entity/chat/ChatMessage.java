@@ -5,15 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import requeset.chat.ChatRequestDto;
 
 import java.time.LocalDateTime;
 
 
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Getter
 @Table(name = "chat_message")
 public class ChatMessage {
@@ -31,12 +28,20 @@ public class ChatMessage {
     private ChatParticipant chatParticipant;
     private LocalDateTime createdAt;
 
-    public static ChatMessage of(ChatRoom chatRoom, ChatParticipant chatParticipant, ChatRequestDto.ChatMessageRequest chatMessageRequest){
-        return ChatMessage.builder()
-                .chatRoom(chatRoom)
-                .chatParticipant(chatParticipant)
-                .content(chatMessageRequest.getContent())
-                .build();
+    @Builder
+    private ChatMessage(String content, ChatRoom chatRoom, ChatParticipant chatParticipant, LocalDateTime createdAt) {
+        this.content = content;
+        this.chatRoom = chatRoom;
+        this.chatParticipant = chatParticipant;
+        this.createdAt = createdAt;
     }
+
+//    public static ChatMessage of(ChatRoom chatRoom, ChatParticipant chatParticipant, ChatRequestDto.ChatMessageRequest chatMessageRequest){
+//        return ChatMessage.builder()
+//                .chatRoom(chatRoom)
+//                .chatParticipant(chatParticipant)
+//                .content(chatMessageRequest.getContent())
+//                .build();
+//    }
 
 }

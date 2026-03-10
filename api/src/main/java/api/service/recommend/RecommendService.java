@@ -1,16 +1,14 @@
 package api.service.recommend;
 
 import jakarta.transaction.Transactional;
-import jdbc.repository.recommend.JdbcRecommendRepository;
-import jpa.repository.gathering.GatheringRepository;
-import jpa.repository.recommend.RecommendRepository;
+import infra.repository.recommend.JdbcRecommendRepository;
+import infra.repository.gathering.GatheringRepository;
+import infra.repository.recommend.RecommendRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 
 
 @Service
@@ -21,8 +19,8 @@ public class RecommendService {
     private final GatheringRepository gatheringRepository;
     private final RecommendRepository recommendRepository;
     private final JdbcRecommendRepository jdbcRecommendRepository;
-    @Value("${server.url}")
-    private String url;
+    @Value("${path}")
+    private String path;
     public void addScore(Long gatheringId,int val){
         jdbcRecommendRepository.updateCount(gatheringId, LocalDate.now(), val);
     }

@@ -1,52 +1,53 @@
 package api.service.image;
 
+import api.response.ApiDataResponse;
+import api.response.ApiResponse;
+import infra.dto.PageableInfo;
+import infra.dto.querydsl.QueryDslPageResponse;
+import entity.image.Image;
+import exception.CommonException;
+import exception.Status;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import infra.repository.image.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import spring.myproject.common.exception.image.NotFoundImageException;
-import spring.myproject.common.s3.S3ImageDownloadService;
-import spring.myproject.dto.response.image.GatheringImageResponse;
-import spring.myproject.entity.image.Image;
-import spring.myproject.repository.image.ImageRepository;
+import infra.repository.image.QueryDslImageRepository;
+import util.PageCalculator;
 
 import java.io.IOException;
 import java.util.List;
 
-import static spring.myproject.utils.ConstClass.SUCCESS_CODE;
-import static spring.myproject.utils.ConstClass.SUCCESS_MESSAGE;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class ImageService {
-    private final S3ImageDownloadService s3ImageDownloadService;
+    private final ImageDownloadService imageDownloadService;
     private final ImageRepository imageRepository;
+    private final QueryDslImageRepository queryDslImageRepository;
 
     @Value("${server.url}")
     private String url;
     public Resource fetchImage(String imageUrl, HttpServletResponse response) throws IOException {
-        Image image = imageRepository.findByUrl(imageUrl).orElseThrow(()-> new NotFoundImageException("not found image"));
+        Image image = imageRepository.findByUrl(imageUrl).orElseThrow(()-> new CommonException(Status.NOT_FOUND_IMAGE));
         String contentType = image.getContentType();
         response.setContentType(contentType);
-        return s3ImageDownloadService.getFileByteArrayFromS3(imageUrl);
+        return imageDownloadService.getFileByteArrayFromS3(imageUrl);
     }
 
-    public GatheringImageResponse gatheringImage(Long gatheringId,Integer pageNum) {
-        PageRequest pageRequest = PageRequest.of(pageNum-1, 9);
-        Page<String> page = imageRepository.gatheringImage(gatheringId, pageRequest);
-        List<String> content = page.getContent();
-        boolean hasNext = page.hasNext();
+    public ApiResponse gatheringImage(Long gatheringId, Integer pageNum,Integer pageSize) {
+        PageableInfo pageableInfo = PageCalculator.toPageableInfo(pageNum, pageSize);
+        QueryDslPageResponse<String> queryDslPageResponse = queryDslImageRepository.gatheringImage(gatheringId,pageableInfo);
+        List<String> content = queryDslPageResponse.getContent();
         List<String> urls = toList(content);
-        return GatheringImageResponse.of(SUCCESS_CODE, SUCCESS_MESSAGE, urls,hasNext);
+        return ApiDataResponse.of(urls, Status.SUCCESS);
     }
 
     private List<String> toList(List<String> urls){
-        return urls.stream().map(u -> getUrl(u))
+        return urls.stream().map(this::getUrl)
                 .toList();
     }
     private String getUrl(String fileUrl){

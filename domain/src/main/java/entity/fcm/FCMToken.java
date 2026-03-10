@@ -11,9 +11,7 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Table(name = "fcm_token")
 public class FCMToken {
 
@@ -27,6 +25,13 @@ public class FCMToken {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Builder
+    private FCMToken(String tokenValue, LocalDate expirationDate, User user) {
+        this.tokenValue = tokenValue;
+        this.expirationDate = expirationDate;
+        this.user = user;
+    }
 
     public void changeExpirationDate(int month){
         expirationDate = LocalDate.now().plusMonths(month);

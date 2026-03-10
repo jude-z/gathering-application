@@ -25,8 +25,8 @@ public class ImageController {
     }
 
     @GetMapping("/gathering/{gatheringId}/image")
-    public ResponseEntity<ApiResponse> gatheringImage(@PathVariable Long gatheringId, @RequestParam Integer pageNum){
-        ApiResponse apiResponse = imageService.gatheringImage(gatheringId, pageNum);
+    public ResponseEntity<ApiResponse> gatheringImage(@PathVariable Long gatheringId, @RequestParam Integer pageNum,@RequestParam Integer pageSize){
+        ApiResponse apiResponse = imageService.gatheringImage(gatheringId, pageNum,pageSize);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 }

@@ -1,6 +1,6 @@
 package api.controller.enrollment;
 
-import api.common.annotation.Username;
+import api.common.resolver.annotation.Username;
 import api.response.ApiResponse;
 import api.service.enrollment.EnrollmentService;
 import lombok.RequiredArgsConstructor;

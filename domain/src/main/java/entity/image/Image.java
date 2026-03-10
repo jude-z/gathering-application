@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name = "image")
 @Entity
-@AllArgsConstructor
-@Builder
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +26,11 @@ public class Image {
     @JoinColumn(name = "gathering_id")
     private Gathering gathering;
 
-    public void changeBoard(Board board){
+    @Builder
+    public Image(String url, String contentType, Board board, Gathering gathering) {
+        this.url = url;
+        this.contentType = contentType;
         this.board = board;
+        this.gathering = gathering;
     }
 }

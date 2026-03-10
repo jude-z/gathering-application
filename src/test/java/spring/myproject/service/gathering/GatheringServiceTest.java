@@ -25,17 +25,12 @@ import spring.myproject.common.exception.meeting.NotAuthorizeException;
 import spring.myproject.common.exception.user.NotFoundUserException;
 import spring.myproject.repository.category.CategoryRepository;
 import spring.myproject.repository.enrollment.EnrollmentRepository;
-import spring.myproject.repository.fcm.TopicRepository;
 import spring.myproject.repository.gathering.GatheringRepository;
 import spring.myproject.repository.image.ImageRepository;
-import spring.myproject.repository.recommend.RecommendRepository;
 import spring.myproject.repository.user.UserRepository;
 import spring.myproject.common.s3.S3ImageUploadService;
-import spring.myproject.service.fcm.FCMService;
 import spring.myproject.service.fcm.FCMTokenTopicService;
 import spring.myproject.service.recommend.RecommendService;
-import spring.myproject.utils.CategoryUtil;
-import spring.myproject.utils.MockData;
 
 import java.io.IOException;
 import java.util.Optional;

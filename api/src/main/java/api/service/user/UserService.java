@@ -1,31 +1,31 @@
 package api.service.user;
 
+import api.common.mapper.UserMapper;
 import api.response.ApiDataResponse;
 import api.response.ApiResponse;
 import api.response.ApiStatusResponse;
 import api.service.image.ImageUploadService;
 import common.ImageUrlConverter;
+import infra.dto.PageableInfo;
+import infra.dto.querydsl.QueryDslPageResponse;
 import entity.image.Image;
 import entity.user.User;
 import exception.CommonException;
 import jakarta.servlet.http.HttpServletResponse;
-import jpa.repository.certification.CertificationRepository;
-import jpa.repository.image.ImageRepository;
-import jpa.repository.user.UserRepository;
+import infra.repository.image.ImageRepository;
+import infra.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import querydsl.repository.certification.QueryDslCertificationRepository;
-import querydsl.repository.image.QueryDslImageRepository;
-import querydsl.repository.user.QueryDslUserRepository;
+import infra.repository.certification.QueryDslCertificationRepository;
+import infra.repository.user.QueryDslUserRepository;
+import util.PageCalculator;
 
 import java.io.IOException;
-import java.util.List;
 
 import static api.requeset.user.UserRequestDto.*;
 import static api.response.user.UserResponseDto.*;
@@ -40,9 +40,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ImageRepository imageRepository;
-    private final CertificationRepository certificationRepository;
     private final QueryDslUserRepository queryDslUserRepository;
-    private final QueryDslImageRepository queryDslImageRepository;
     private final QueryDslCertificationRepository queryDslCertificationRepository;
     private final PasswordEncoder passwordEncoder;
     private final ImageUploadService imageUploadService;
@@ -73,7 +71,7 @@ public class UserService {
                         .build();
                 imageRepository.save(image);
             }
-            User user = UserFactory.toUser(signUpRequest,image,passwordEncoder);
+            User user = UserMapper.toUser(signUpRequest,image,passwordEncoder);
             userRepository.save(user);
             return ApiStatusResponse.of(SUCCESS);
 
@@ -94,7 +92,7 @@ public class UserService {
                 imageRepository.save(image);
                 user.changeProfileImage(image);
             }
-            user.change(updateRequest,passwordEncoder);
+            UserMapper.updateUser(user, updateRequest, passwordEncoder);
             return ApiDataResponse.of(userId,SUCCESS);
     }
 
@@ -109,11 +107,11 @@ public class UserService {
     }
 
     public ApiResponse emailCertification(EmailCertificationRequest emailCertificationRequest) {
-
-            List<User> users = queryDslUserRepository.findByEmail(emailCertificationRequest.getEmail());
-            if(!users.isEmpty()) throw new CommonException(DUPLICATE_EMAIL);
-            //TODO: Kafka Producer
-            return ApiStatusResponse.of(SUCCESS);
+        PageableInfo pageableInfo = PageCalculator.toPageableInfo(1, 1);
+        QueryDslPageResponse<User> queryDslPageResponse = queryDslUserRepository.findByEmail(pageableInfo,emailCertificationRequest.getEmail());
+        if(!queryDslPageResponse.isEmpty()) throw new CommonException(DUPLICATE_EMAIL);
+        //TODO: Kafka Producer
+        return ApiStatusResponse.of(SUCCESS);
     }
 
     public ApiResponse checkCertification(CheckCertificationRequest checkCertificationRequest) {
@@ -128,5 +126,9 @@ public class UserService {
                 .orElseThrow(() -> new CommonException(NOT_FOUND_USER));
         UserResponse userResponse = UserResponse.from(SUCCESS,user,imageUrlConverter);
         return ApiDataResponse.of(userResponse,SUCCESS);
+    }
+
+    public ApiResponse generateToken(String refreshToken, HttpServletResponse response) {
+        return null;
     }
 }

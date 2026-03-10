@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Entity
 @Table(name = "category")
 public class Category {
@@ -18,14 +16,12 @@ public class Category {
     private Long id;
     private String name;
 
-
-    public static Category from(String name){
-        return Category.builder()
-                .name(name)
-                .build();
+    @Builder
+    private Category(String name) {
+        this.name = name;
     }
 
-    public void changeName(String name) {
+    public void changeName(String name){
         this.name = name;
     }
 }

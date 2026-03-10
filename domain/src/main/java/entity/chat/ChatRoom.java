@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Getter
 @Table(name = "chat_room")
 public class ChatRoom {
@@ -34,5 +32,12 @@ public class ChatRoom {
         this.count = count;
     }
 
-
+    @Builder
+    private ChatRoom(String title, String description, User createdBy, Gathering gathering, int count) {
+        this.title = title;
+        this.description = description;
+        this.createdBy = createdBy;
+        this.gathering = gathering;
+        this.count = count;
+    }
 }

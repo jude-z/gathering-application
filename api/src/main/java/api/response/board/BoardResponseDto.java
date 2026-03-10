@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import response.board.querydto.BoardQuery;
-import response.board.querydto.BoardsQuery;
+import infra.dto.querydsl.board.BoardProjection;
+import infra.dto.querydsl.board.BoardsProjection;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,8 +32,6 @@ public class BoardResponseDto {
     @Builder
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class BoardResponse {
-        private String code;
-        private String message;
         private String title;
         private String description;
         private List<String> imageUrls;
@@ -41,18 +39,15 @@ public class BoardResponseDto {
         private String userImageUrl;
         private LocalDateTime registerDate;
 
-        public static BoardResponse of(List<BoardQuery> boardQueries, List<String> imageUrls, String userImageUrl, String code, String message) {
+        public static BoardResponse from(List<BoardProjection> boardProjections, List<String> imageUrls, String userImageUrl) {
             return BoardResponse.builder()
-                    .code(code)
-                    .message(message)
-                    .title(boardQueries.getFirst().getTitle())
-                    .description(boardQueries.getFirst().getDescription())
-                    .registerDate(boardQueries.getFirst().getRegisterDate())
+                    .title(boardProjections.getFirst().getTitle())
+                    .description(boardProjections.getFirst().getDescription())
+                    .registerDate(boardProjections.getFirst().getRegisterDate())
                     .imageUrls(imageUrls)
-                    .username(boardQueries.getFirst().getUsername())
+                    .username(boardProjections.getFirst().getUsername())
                     .userImageUrl(userImageUrl)
                     .build();
-
         }
     }
 
@@ -89,16 +84,15 @@ public class BoardResponseDto {
         private LocalDateTime registerDate;
         private String url;
 
-        public static BoardElement from(BoardsQuery boardsQuery, MyFunctionalInterface myFunctionalInterface) {
+        public static BoardElement from(BoardsProjection projection, String baseUrl) {
             return BoardElement.builder()
-                    .id(boardsQuery.getId())
-                    .title(boardsQuery.getTitle())
-                    .description(boardsQuery.getDescription())
-                    .nickname(boardsQuery.getNickname())
-                    .registerDate(boardsQuery.getRegisterDate())
-                    .url(myFunctionalInterface.execute(boardsQuery.getUrl()))
+                    .id(projection.getId())
+                    .title(projection.getTitle())
+                    .description(projection.getDescription())
+                    .nickname(projection.getNickname())
+                    .registerDate(projection.getRegisterDate())
+                    .url(baseUrl + projection.getUrl())
                     .build();
-
 
         }
     }

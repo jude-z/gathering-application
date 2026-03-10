@@ -1,6 +1,6 @@
 package api.controller.alarm;
 
-import api.common.annotation.Username;
+import api.common.resolver.annotation.Username;
 import api.response.ApiResponse;
 import api.service.alarm.AlarmService;
 import lombok.RequiredArgsConstructor;

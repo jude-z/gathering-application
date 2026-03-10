@@ -25,7 +25,6 @@ import spring.myproject.repository.chat.ChatRoomRepository;
 import spring.myproject.repository.chat.ReadStatusRepository;
 import spring.myproject.repository.user.UserRepository;
 import spring.myproject.service.fail.FailService;
-import spring.myproject.common.provider.EmailProvider;
 import spring.myproject.service.fcm.FCMService;
 
 import java.util.List;

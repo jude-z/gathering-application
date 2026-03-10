@@ -24,6 +24,9 @@ public class Alarm {
     @JoinColumn(name = "user_id")
     private User user;
 
+    public void setChecked(){
+        this.checked = true;
+    }
     @Builder
     private Alarm(String content, User user, LocalDateTime date, boolean checked){
         this.content = content;

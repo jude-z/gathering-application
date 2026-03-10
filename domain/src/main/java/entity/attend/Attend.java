@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Getter
 @Entity
 public class Attend {
@@ -28,22 +26,11 @@ public class Attend {
     private User attendBy;
     private LocalDateTime date;
 
-    public static Attend of(Meeting meeting, User attendBy, LocalDateTime date) {
-        return Attend.builder()
-                .meeting(meeting)
-                .attendBy(attendBy)
-                .date(date)
-                .build();
-    }
-    public void addMeeting(Meeting meeting){
+    @Builder
+    private Attend(Meeting meeting, User attendBy, LocalDateTime date) {
         this.meeting = meeting;
-    }
-    public static Attend of(Meeting meeting, User user){
-        return Attend.builder()
-                .meeting(meeting)
-                .date(LocalDateTime.now())
-                .attendBy(user)
-                .build();
+        this.attendBy = attendBy;
+        this.date = date;
     }
 
 }

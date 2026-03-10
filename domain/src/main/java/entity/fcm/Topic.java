@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class Topic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,5 +19,10 @@ public class Topic {
     @OneToOne(mappedBy = "topic", optional = false)
     private Gathering gathering;
 
+    @Builder
+    private Topic(String topicName, Gathering gathering) {
+        this.topicName = topicName;
+        this.gathering = gathering;
+    }
 }
 

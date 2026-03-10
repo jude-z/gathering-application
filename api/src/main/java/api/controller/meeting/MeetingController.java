@@ -1,6 +1,6 @@
 package api.controller.meeting;
 
-import api.common.annotation.Username;
+import api.common.resolver.annotation.Username;
 import api.response.ApiResponse;
 import api.service.meeting.MeetingService;
 import lombok.RequiredArgsConstructor;
@@ -54,9 +54,9 @@ public class MeetingController {
     }
 
     @GetMapping("/gathering/{gatheringId}/meetings")
-    public ResponseEntity<ApiResponse> meetings(@RequestParam int pageNum,
+    public ResponseEntity<ApiResponse> meetings(@RequestParam int pageNum,@RequestParam int pageSize,
                                                 @PathVariable Long gatheringId){
-        ApiResponse apiResponse = meetingService.meetings(pageNum, gatheringId);
+        ApiResponse apiResponse = meetingService.meetings(pageNum, pageSize,gatheringId);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 }

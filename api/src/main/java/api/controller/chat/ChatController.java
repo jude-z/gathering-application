@@ -1,6 +1,6 @@
 package api.controller.chat;
 
-import api.common.annotation.Username;
+import api.common.resolver.annotation.Username;
 import api.response.ApiResponse;
 import api.service.chat.ChatService;
 import lombok.RequiredArgsConstructor;

@@ -4,11 +4,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import response.meeting.querydto.MeetingDetailQuery;
-import response.meeting.querydto.MeetingsQuery;
-import response.meeting.querydto.Participated;
+import infra.dto.querydsl.meeting.MeetingsProjection;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MeetingResponseDto {
@@ -56,8 +55,6 @@ public class MeetingResponseDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class MeetingResponse {
 
-        private String code;
-        private String message;
         private Long id;
         private String title;
         private String createdBy;
@@ -73,8 +70,6 @@ public class MeetingResponseDto {
 
         public static MeetingResponse of(String code, String message, List<MeetingDetailQuery> meetingDetailQueries, List<String> attends, String url){
             return MeetingResponse.builder()
-                    .code(code)
-                    .message(message)
                     .id(meetingDetailQueries.getLast().getId())
                     .title(meetingDetailQueries.getFirst().getTitle())
                     .content(meetingDetailQueries.getFirst().getContent())
@@ -120,18 +115,26 @@ public class MeetingResponseDto {
         private String url;
         private List<Participated> participatedList;
 
-        public static MeetingElement from(MeetingsQuery meetingsQuery, MyFunctionalInterface myFunctionalInterface){
+        public static MeetingElement from(MeetingsProjection projection, String baseUrl) {
             return MeetingElement.builder()
-                    .id(meetingsQuery.getId())
-                    .title(meetingsQuery.getTitle())
-                    .createdBy(meetingsQuery.getCreatedBy())
-                    .meetingDate(meetingsQuery.getMeetingDate())
-                    .endDate(meetingsQuery.getEndDate())
-                    .content(meetingsQuery.getContent())
-                    .count(meetingsQuery.getCount())
-                    .url(myFunctionalInterface.execute(meetingsQuery.getUrl()))
+                    .id(projection.getId())
+                    .title(projection.getTitle())
+                    .createdBy(projection.getCreatedBy())
+                    .meetingDate(projection.getMeetingDate())
+                    .endDate(projection.getEndDate())
+                    .content(projection.getContent())
+                    .count(projection.getCount())
+                    .url(baseUrl + projection.getUrl())
+                    .participatedList(new ArrayList<>())
                     .build();
         }
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class Participated {
+        private Long id;
+        private String imageUrl;
     }
 
 }

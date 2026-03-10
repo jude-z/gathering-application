@@ -14,8 +14,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "enrollment")
-@AllArgsConstructor
-@Builder
 public class Enrollment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,18 +27,16 @@ public class Enrollment {
     private User enrolledBy;
     private LocalDateTime date;
 
+    @Builder
+    public Enrollment(boolean accepted, Gathering gathering, User enrolledBy, LocalDateTime date) {
+        this.accepted = accepted;
+        this.gathering = gathering;
+        this.enrolledBy = enrolledBy;
+        this.date = date;
+    }
+
     public void changeAccepted(){
         this.accepted = true;
     }
-
-    public static Enrollment of(boolean accepted, Gathering gathering, User enrolledBy,LocalDateTime date) {
-        return Enrollment.builder()
-                .accepted(accepted)
-                .gathering(gathering)
-                .enrolledBy(enrolledBy)
-                .date(date)
-                .build();
-    }
-
 
 }

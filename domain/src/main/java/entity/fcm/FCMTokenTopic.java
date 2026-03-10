@@ -8,9 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Table(name = "fcm_token_topic")
 public class FCMTokenTopic {
     @Id
@@ -25,7 +23,8 @@ public class FCMTokenTopic {
     @JoinColumn(name = "fcm_token_id")
     private FCMToken fcmToken;
 
-    public FCMTokenTopic(Topic topic, FCMToken fcmToken) {
+    @Builder
+    private FCMTokenTopic(Topic topic, FCMToken fcmToken) {
         this.topic = topic;
         this.fcmToken = fcmToken;
     }

@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Table(name = "user_topic")
 public class UserTopic {
     @Id
@@ -25,4 +23,10 @@ public class UserTopic {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_Id")
     private User user;
+
+    @Builder
+    private UserTopic(Topic topic, User user) {
+        this.topic = topic;
+        this.user = user;
+    }
 }

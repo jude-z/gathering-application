@@ -1,13 +1,16 @@
 package util;
 
 
-import dto.PageInfo;
-import dto.PageableInfo;
+import infra.dto.PageInfo;
+import infra.dto.PageableInfo;
 
 public class PageCalculator {
     public static PageableInfo toPageableInfo(int pageNum, int pageSize) {
         int offset = (pageNum - 1) * pageSize;
         return PageableInfo.of(offset, pageSize);
+    }
+    public static PageableInfo toDefaultPageableInfo(){
+        return PageCalculator.toPageableInfo(1,1);
     }
 
 

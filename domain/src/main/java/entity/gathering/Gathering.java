@@ -7,23 +7,20 @@ import entity.fcm.Topic;
 import entity.image.Image;
 import entity.user.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import requeset.gathering.GatheringRequestDto;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 
+
 @Getter
 @NoArgsConstructor
 @Entity
 @Table(name = "gathering")
-@AllArgsConstructor
-@Builder
 public class Gathering {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,33 +45,34 @@ public class Gathering {
     private Category category;
 
     @OneToMany(mappedBy = "gathering")
-    private List<Enrollment> enrollments = new ArrayList<>();
+    private List<Enrollment> enrollments;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "topic_id")
     private Topic topic;
 
+    @Builder
+    private Gathering(String title, String content, LocalDateTime registerDate, User createBy, int count,
+                     Image gatheringImage, Category category, Topic topic) {
+        this.title = title;
+        this.content = content;
+        this.registerDate = registerDate;
+        this.createBy = createBy;
+        this.count = count;
+        this.gatheringImage = gatheringImage;
+        this.category = category;
+        this.enrollments = new ArrayList<>();
+        this.topic = topic;
+    }
     public void changeTopic(Topic topic){
         this.topic = topic;
     }
-    public void changeGathering(Image image, UpdateGatheringRequest updateGatheringRequest){
-        if(image != null) this.gatheringImage = image;
-        this.title = updateGatheringRequest.getTitle();
-        this.content = updateGatheringRequest.getContent();
+
+    public void change(String title, String content, Image gatheringImage){
+        this.title = title;
+        this.content = content;
+        if(gatheringImage != null) this.gatheringImage = gatheringImage;
         this.registerDate = LocalDateTime.now();
-    }
-
-
-    public static Gathering of(AddGatheringRequest addGatheringRequest, User createBy, Image image, Category category){
-        return Gathering.builder()
-                .title(addGatheringRequest.getTitle())
-                .content(addGatheringRequest.getContent())
-                .createBy(createBy)
-                .registerDate(LocalDateTime.now())
-                .gatheringImage(image)
-                .category(category)
-                .count(1)
-                .build();
     }
 
 }

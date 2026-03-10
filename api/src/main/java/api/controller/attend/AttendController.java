@@ -1,6 +1,6 @@
 package api.controller.attend;
 
-import api.common.annotation.Username;
+import api.common.resolver.annotation.Username;
 import api.response.ApiResponse;
 import api.service.attend.AttendService;
 import lombok.RequiredArgsConstructor;

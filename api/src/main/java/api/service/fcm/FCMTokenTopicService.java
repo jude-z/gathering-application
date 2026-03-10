@@ -1,29 +1,33 @@
 package api.service.fcm;
 
+import api.common.mapper.FCMTokenTopicMapper;
+import infra.dto.querydsl.QueryDslPageResponse;
+import entity.fcm.FCMToken;
+import entity.fcm.FCMTokenTopic;
+import entity.fcm.Topic;
+import entity.fcm.UserTopic;
+import entity.user.User;
+import exception.CommonException;
+import infra.repository.fcm.JdbcFcmRepository;
+import infra.repository.fcm.FCMTokenRepository;
+import infra.repository.fcm.FCMTokenTopicRepository;
+import infra.repository.fcm.TopicRepository;
+import infra.repository.fcm.UserTopicRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import spring.myproject.common.exception.fcm.AlreadySubscribeTopicException;
-import spring.myproject.common.exception.fcm.NotFoundTopicException;
-import spring.myproject.common.exception.user.NotFoundUserException;
-import spring.myproject.dto.request.fcm.TokenNotificationRequestDto;
-import spring.myproject.entity.fcm.FCMToken;
-import spring.myproject.entity.fcm.FCMTokenTopic;
-import spring.myproject.entity.fcm.Topic;
-import spring.myproject.entity.fcm.UserTopic;
-import spring.myproject.entity.user.User;
-import spring.myproject.repository.fcm.FCMTokenRepository;
-import spring.myproject.repository.fcm.FCMTokenTopicRepository;
-import spring.myproject.repository.fcm.TopicRepository;
-import spring.myproject.repository.fcm.UserTopicRepository;
-import spring.myproject.repository.user.UserRepository;
+import infra.repository.fcm.QueryDslFcmRepository;
+import infra.repository.user.QueryDslUserRepository;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static spring.myproject.dto.request.user.UserRequestDto.*;
+import static api.requeset.fcm.FcmRequestDto.*;
+import static api.requeset.user.UserRequestDto.*;
+import static exception.Status.*;
+
 
 @Service
 @RequiredArgsConstructor
@@ -34,17 +38,18 @@ public class FCMTokenTopicService {
     private final FCMTokenRepository fcmTokenRepository;
     private final FCMTokenTopicRepository fcmTokenTopicRepository;
     private final UserTopicRepository userTopicRepository;
-    private final UserRepository userRepository;
-    private final FCMService fcmService;
+    private final QueryDslUserRepository queryDslUserRepository;
+    private final QueryDslFcmRepository queryDslFcmRepository;
+    private final JdbcFcmRepository jdbcFcmRepository;
 
     final int TOKEN_EXPIRATION_MONTHS = 2;
 
     public void saveFCMToken(SignInRequest signInRequest) {
 
-        User user = userRepository.findByUsername(signInRequest.getUsername())
-                .orElseThrow(() -> new NotFoundUserException("User not found"));
+        User user = queryDslUserRepository.findByUsername(signInRequest.getUsername())
+                .orElseThrow(() -> new CommonException(NOT_FOUND_USER));
         Long userId = user.getId();
-        Optional<FCMToken> existingToken = fcmTokenRepository.findByTokenValueAndUser(signInRequest.getFcmToken(), user.getId());
+        Optional<FCMToken> existingToken = queryDslFcmRepository.findByTokenValueAndUser(signInRequest.getFcmToken(), user.getId());
         if (existingToken.isPresent()) {
             FCMToken fcmToken = existingToken.get();
             fcmToken.changeExpirationDate(2);
@@ -55,15 +60,15 @@ public class FCMTokenTopicService {
                     .expirationDate(LocalDate.now().plusMonths(TOKEN_EXPIRATION_MONTHS))
                     .build();
             fcmTokenRepository.save(fcmToken);
-
-            List<UserTopic> userTopics = userTopicRepository.findByUserId(userId);
-            List<Topic> subscribedTopics = userTopics.stream()
+            QueryDslPageResponse<UserTopic> queryDslPageResponse = queryDslFcmRepository.findByUserId(userId);
+            List<UserTopic> content = queryDslPageResponse.getContent();
+            List<Topic> subscribedTopics = content.stream()
                     .map(UserTopic::getTopic)
                     .distinct()
                     .collect(Collectors.toList()).reversed();
 
             List<FCMTokenTopic> newSubscriptions = subscribedTopics.stream()
-                    .map(topic -> new FCMTokenTopic(topic, fcmToken))
+                    .map(topic -> FCMTokenTopicMapper.toFCMTokenTopic(topic, fcmToken))
                     .collect(Collectors.toList());
             fcmTokenTopicRepository.saveAll(newSubscriptions);
 
@@ -77,14 +82,14 @@ public class FCMTokenTopicService {
     public void subscribeToTopic(String topicName, Long userId) {
 
         Topic topic = topicRepository.findByTopicName(topicName)
-                .orElseThrow(() -> new NotFoundTopicException("Not Found Topic"));
+                .orElseThrow(() -> new CommonException(NOT_FOUND_TOPIC));
 
 
-        User user = userRepository.findAndTokenByUserId(userId)
-                .orElseThrow(() -> new NotFoundUserException("Not Found User"));
+        User user = queryDslUserRepository.findAndTokenByUserId(userId)
+                .orElseThrow(() -> new CommonException(NOT_FOUND_USER));
 
-        if (userTopicRepository.existsByTopicAndUser(topicName, userId)) {
-            throw new AlreadySubscribeTopicException("already subscribe topic");
+        if (queryDslFcmRepository.existsByTopicAndUser(topicName, userId)) {
+            throw new CommonException(ALREADY_SUBSCRIBE_TOPIC);
         }
 
         List<FCMToken> userTokens = user.getTokens();
@@ -96,7 +101,7 @@ public class FCMTokenTopicService {
         userTopicRepository.save(userTopic);
 
         List<FCMTokenTopic> topicTokens = userTokens.stream()
-                .map(token -> new FCMTokenTopic(topic, token))
+                .map(token -> FCMTokenTopicMapper.toFCMTokenTopic(topic, token))
                 .collect(Collectors.toList());
         fcmTokenTopicRepository.saveAll(topicTokens);
 
@@ -110,17 +115,17 @@ public class FCMTokenTopicService {
     public void unsubscribeFromTopic(String topicName, Long userId) {
 
         Topic topic = topicRepository.findByTopicName(topicName)
-                .orElseThrow(() -> new NotFoundTopicException("Not Found Topic"));
+                .orElseThrow(() -> new CommonException(NOT_FOUND_TOPIC));
 
-        User user = userRepository.findAndTokenByUserId(userId)
-                .orElseThrow(() -> new NotFoundUserException("Not Found User"));
+        User user = queryDslUserRepository.findAndTokenByUserId(userId)
+                .orElseThrow(() -> new CommonException(NOT_FOUND_USER));
 
         List<FCMToken> memberTokens = user.getTokens();
         List<String> tokenValues = memberTokens.stream()
                 .map(FCMToken::getTokenValue)
                 .collect(Collectors.toList());
-        userTopicRepository.deleteByTopicAndUser(topic, user);
-        fcmTokenTopicRepository.deleteByTokenValueIn(tokenValues);
+        jdbcFcmRepository.deleteUserTopicByTopicAndUser(topic,user);
+        jdbcFcmRepository.deleteTokenTopicByTokenValueIn(tokenValues);
 
 //        fcmService.unsubscribeFromTopic(topicName, tokenValues);
     }

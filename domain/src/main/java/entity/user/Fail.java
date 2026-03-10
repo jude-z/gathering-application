@@ -10,14 +10,19 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Fail {
 
     @Id
     private Long id;
     private String content;
     private String clientId;
+    @Builder
+    private Fail(String content, String clientId, String email) {
+        this.content = content;
+        this.clientId = clientId;
+        this.email = email;
+    }
+
     private String email;
 
     public static Fail of(String clientId,String content,String email) {

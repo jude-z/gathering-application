@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Getter
 @Table(name = "chat_participant")
 public class ChatParticipant {
@@ -29,7 +27,14 @@ public class ChatParticipant {
         this.status = status;
     }
 
-    public static ChatParticipant of(ChatRoom chatRoom,User user,boolean status){
+    @Builder
+    private ChatParticipant(User user, ChatRoom chatRoom, boolean status) {
+        this.user = user;
+        this.chatRoom = chatRoom;
+        this.status = status;
+    }
+
+    public static ChatParticipant of(ChatRoom chatRoom, User user, boolean status){
         return ChatParticipant.builder()
                 .chatRoom(chatRoom)
                 .user(user)

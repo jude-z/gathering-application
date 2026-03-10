@@ -3,23 +3,18 @@ package api.service.alarm;
 import api.response.ApiDataResponse;
 import api.response.ApiResponse;
 import api.response.ApiStatusResponse;
-import dto.PageInfo;
-import dto.PageableInfo;
-import dto.querydsl.QueryDslPageResponse;
+import infra.dto.PageInfo;
+import infra.dto.PageableInfo;
+import infra.dto.querydsl.QueryDslPageResponse;
 import entity.alarm.Alarm;
 import entity.user.User;
 import exception.CommonException;
-import exception.Status;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jpa.repository.alarm.AlarmRepository;
-import jpa.repository.user.UserRepository;
+import infra.repository.alarm.AlarmRepository;
+import infra.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import querydsl.repository.alarm.QueryDslAlarmRepository;
-import querydsl.repository.user.QueryDslUserRepository;
+import infra.repository.alarm.QueryDslAlarmRepository;
 import util.PageCalculator;
 
 import java.util.List;
@@ -33,7 +28,6 @@ import static exception.Status.*;
 public class AlarmService {
 
     private final UserRepository userRepository;
-    private final QueryDslUserRepository queryDslUserRepository;
     private final AlarmRepository alarmRepository;
     private final QueryDslAlarmRepository queryDslAlarmRepository;
 
@@ -43,8 +37,7 @@ public class AlarmService {
                     .orElseThrow(()-> new CommonException(NOT_FOUND_USER));
             Alarm alarm = alarmRepository.findById(alarmId)
                     .orElseThrow(() ->  new CommonException(NOT_FOUND_USER));
-            //TODO
-//            alarm.setChecked(true);
+            alarm.setChecked();
             return ApiStatusResponse.of(SUCCESS);
     }
     public ApiResponse deleteAlarm(Long alarmId, Long userId) {

@@ -7,11 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 public class FcmRequestDto {
+
     @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    static class TokenNotificationRequestDto {
+    public static class TokenNotificationRequestDto {
         private String title;
         private String content;
         private String url;
@@ -31,7 +32,7 @@ public class FcmRequestDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    static class TopicNotificationRequestDto {
+    public static class TopicNotificationRequestDto {
         private String title;
         private String content;
         private String url;

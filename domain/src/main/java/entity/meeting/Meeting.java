@@ -7,7 +7,6 @@ import entity.image.Image;
 import entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
-import requeset.meeting.MeetingRequestDto;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,10 +14,7 @@ import java.util.List;
 
 
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Getter
-@Setter
 @Entity
 @Table(name = "meeting")
 public class Meeting {
@@ -35,8 +31,7 @@ public class Meeting {
     @JoinColumn(name = "user_id")
     private User createdBy;
     @OneToMany(mappedBy = "meeting",cascade = CascadeType.REMOVE)
-    @Builder.Default
-    private List<Attend> attends = new ArrayList<>();
+    private List<Attend> attends;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gathering_id")
     private Gathering gathering;
@@ -51,16 +46,38 @@ public class Meeting {
         }
         this.attends = attends;
     }
-    public static Meeting of(AddMeetingRequest addMeetingRequest, Image image, User user, Gathering gathering){
-        return Meeting.builder()
-                .title(addMeetingRequest.getTitle())
-                .content(addMeetingRequest.getContent())
-                .createdBy(user)
-                .meetingDate(addMeetingRequest.getMeetingDate())
-                .endDate(addMeetingRequest.getEndDate())
-                .gathering(gathering)
-                .count(1)
-                .image(image)
-                .build();
+    @Builder
+    private Meeting(String title, LocalDateTime meetingDate, LocalDateTime endDate, String content, User createdBy
+            , Gathering gathering, Image image, int count) {
+        this.title = title;
+        this.meetingDate = meetingDate;
+        this.endDate = endDate;
+        this.content = content;
+        this.createdBy = createdBy;
+        this.attends = new ArrayList<>();
+        this.gathering = gathering;
+        this.image = image;
+        this.count = count;
     }
+
+    public void changeMeeting(String title, String content, LocalDateTime meetingDate, LocalDateTime endDate, Image image) {
+        this.title = title;
+        this.content = content;
+        this.meetingDate = meetingDate;
+        this.endDate = endDate;
+        this.image = image;
+    }
+
+    //    public static Meeting of(AddMeetingRequest addMeetingRequest, Image image, User user, Gathering gathering){
+//        return Meeting.builder()
+//                .title(addMeetingRequest.getTitle())
+//                .content(addMeetingRequest.getContent())
+//                .createdBy(user)
+//                .meetingDate(addMeetingRequest.getMeetingDate())
+//                .endDate(addMeetingRequest.getEndDate())
+//                .gathering(gathering)
+//                .count(1)
+//                .image(image)
+//                .build();
+//    }
 }

@@ -15,8 +15,6 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Entity
 public class Board {
     @Id
@@ -29,9 +27,19 @@ public class Board {
     @JoinColumn(name = "gathering_id")
     private Gathering gathering;
     @OneToMany(mappedBy = "board")
-    private List<Image> images = new ArrayList<>();
+    private List<Image> images;
     private String title;
     @Lob
     private String description;
     private LocalDateTime registerDate;
+
+    @Builder
+    private Board(User user, Gathering gathering, String title, String description, LocalDateTime registerDate) {
+        this.user = user;
+        this.gathering = gathering;
+        this.images = new ArrayList<>();
+        this.title = title;
+        this.description = description;
+        this.registerDate = registerDate;
+    }
 }

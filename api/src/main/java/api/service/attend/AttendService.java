@@ -1,27 +1,28 @@
 package api.service.attend;
 
+import api.common.mapper.AttendMapper;
 import api.response.ApiResponse;
-import api.service.recommend.RecommendService;
+import api.response.ApiStatusResponse;
+import infra.dto.PageableInfo;
+import infra.dto.querydsl.QueryDslPageResponse;
 import entity.attend.Attend;
+import entity.fcm.Topic;
 import entity.gathering.Gathering;
 import entity.meeting.Meeting;
 import entity.user.User;
 import exception.CommonException;
-import exception.Status;
-import jpa.repository.attend.AttendRepository;
-import jpa.repository.gathering.GatheringRepository;
-import jpa.repository.meeting.MeetingRepository;
-import jpa.repository.user.UserRepository;
+import infra.repository.meeting.JdbcMeetingRepository;
+import infra.repository.attend.AttendRepository;
+import infra.repository.meeting.MeetingRepository;
+import infra.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import querydsl.repository.attend.QueryDslAttendRepository;
-import querydsl.repository.gathering.QueryDslGatheringRepository;
-import querydsl.repository.meeting.QueryDslMeetingRepository;
-import querydsl.repository.user.QueryDslUserRepository;
+import infra.repository.attend.QueryDslAttendRepository;
+import infra.repository.gathering.QueryDslGatheringRepository;
+import util.PageCalculator;
 
-import java.time.LocalDateTime;
-
+import static api.requeset.fcm.FcmRequestDto.*;
 import static exception.Status.*;
 
 
@@ -33,13 +34,9 @@ public class AttendService {
         private final UserRepository userRepository;
         private final AttendRepository attendRepository;
         private final MeetingRepository meetingRepository;
-        private final GatheringRepository gatheringRepository;
-        private final QueryDslUserRepository queryDslUserRepository;
         private final QueryDslAttendRepository queryDslAttendRepository;
-        private final QueryDslMeetingRepository queryDslMeetingRepository;
         private final QueryDslGatheringRepository queryDslGatheringRepository;
-        private final RecommendService recommendService;
-//        private final AsyncService asyncService;
+        private final JdbcMeetingRepository jdbcMeetingRepository;
 
         public ApiResponse addAttend(Long meetingId, Long userId, Long gatheringId) {
                 User user = userRepository.findById(userId)
@@ -48,40 +45,44 @@ public class AttendService {
                         .orElseThrow(() -> new CommonException(NOT_FOUND_GATHERING));
                 Meeting meeting = meetingRepository.findById(meetingId)
                         .orElseThrow(()->new CommonException(NOT_FOUND_MEETING));
-                Attend checkAttend = queryDslAttendRepository.findByUserIdAndMeetingId(user.getId(),meetingId);
-                if(checkAttend != null) throw new CommonException(ALREADY_ATTEND);
-                Attend attend = Attend.of(meeting,user,LocalDateTime.now());
+                PageableInfo pageableInfo = PageCalculator.toDefaultPageableInfo();
+                QueryDslPageResponse<Attend> queryDslPageResponse = queryDslAttendRepository.findByUserIdAndMeetingId(pageableInfo,user.getId(),meetingId);
+                if(queryDslPageResponse.isEmpty()) throw new CommonException(ALREADY_ATTEND);
+                Attend attend = AttendMapper.toAttend(meeting, user);
                 attendRepository.save(attend);
-                meetingRepository.updateCount(meetingId,1);
+                jdbcMeetingRepository.updateCount(meetingId,1);
                 Topic topic = gathering.getTopic();
                 String title = "Board created";
                 String content = "%s has created board".formatted(user.getNickname());
                 TopicNotificationRequestDto topicNotificationRequestDto = TopicNotificationRequestDto.from(title,content,topic);
-                asyncService.sendTopic(topicNotificationRequestDto);
-                return AddAttendResponse.of(SUCCESS_CODE,SUCCESS_MESSAGE);
+                //TODO : kafka producer(topic 알림)
+                return ApiStatusResponse.of(SUCCESS);
         }
 
-        public ApiResponse disAttend(Long meetingId, Long userId,Long gatheringId) {
-
+        public ApiResponse disAttend(Long meetingId, Long userId, Long gatheringId) {
                 userRepository.findById(userId)
-                        .orElseThrow(() -> new NotFoundUserException("no exist User!!"));
+                        .orElseThrow(() -> new CommonException(NOT_FOUND_USER));
                 Meeting meeting = meetingRepository.findById(meetingId)
-                        .orElseThrow(()->new NotFoundMeetingExeption("no exist Meeting!!"));
-                Attend attend = attendRepository.findByUserIdAndMeetingId(userId,meetingId);
-                if(attend == null) throw  new NotFoundAttendException("Not Found Attend!!");
+                        .orElseThrow(() -> new CommonException(NOT_FOUND_MEETING));
+                PageableInfo pageableInfo = PageCalculator.toDefaultPageableInfo();
+                QueryDslPageResponse<Attend> queryDslPageResponse = queryDslAttendRepository
+                        .findByUserIdAndMeetingId(pageableInfo, userId, meetingId);
+                if (queryDslPageResponse.getContent().isEmpty()) throw new CommonException(NOT_FOUND_ATTEND);
+                Attend attend = queryDslPageResponse.getContent().getFirst();
                 Long createdById = meeting.getCreatedBy().getId();
                 checkMeetingOpener(createdById, userId, meetingId, attend);
-                recommendService.addScore(gatheringId,-1);
-                return DisAttendResponse.of(SUCCESS_CODE,SUCCESS_MESSAGE);
+                if (createdById.equals(userId)) throw new CommonException(NOT_WITHDRAW);
+                attendRepository.delete(attend);
+                jdbcMeetingRepository.updateCount(meetingId, -1);
+                return ApiStatusResponse.of(SUCCESS);
         }
 
-
         private void checkMeetingOpener(Long createdById, Long userId, Long meetingId, Attend attend) {
-            if(!createdById.equals(userId)){
-                    attendRepository.delete(attend);
-                    meetingRepository.updateCount(meetingId,1);
-            }else{
-                throw new NotWithdrawException("cannot withdraw meeting");
-            }
+                if (!createdById.equals(userId)) {
+                        attendRepository.delete(attend);
+                        jdbcMeetingRepository.updateCount(meetingId, 1);
+                } else {
+                        throw new CommonException(NOT_WITHDRAW);
+                }
         }
 }

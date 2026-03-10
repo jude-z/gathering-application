@@ -1,18 +1,18 @@
 package api.service.fcm;
 
+import api.requeset.fcm.FcmRequestDto;
 import com.google.firebase.messaging.*;
+import entity.fcm.FCMToken;
+import infra.repository.fcm.JdbcFcmRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import spring.myproject.dto.request.fcm.TokenNotificationRequestDto;
-import spring.myproject.dto.request.fcm.TopicNotificationRequestDto;
-import spring.myproject.entity.fcm.FCMToken;
-import spring.myproject.repository.fcm.FCMTokenRepository;
-import spring.myproject.repository.fcm.FCMTokenTopicRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+
+import static api.requeset.fcm.FcmRequestDto.*;
 
 
 @Service
@@ -20,11 +20,10 @@ import java.util.concurrent.ExecutionException;
 @Slf4j
 public class FCMService {
 
-	private final FCMTokenRepository fcmTokenRepository;
-	private final FCMTokenTopicRepository fcmTokenTopicRepository;
+	private final JdbcFcmRepository jdbcFcmRepository;
 
 
-	public void sendByTopic(TopicNotificationRequestDto topicNotificationRequestDto) {
+	public void sendByTopic(FcmRequestDto.TopicNotificationRequestDto topicNotificationRequestDto) {
 		Message message = Message.builder()
 			.setTopic(topicNotificationRequestDto.getTopic())
 			.setNotification(Notification.builder()
@@ -64,7 +63,7 @@ public class FCMService {
 			List<String> failedTokenList = failedTokens.stream()
 					.map(FCMToken::getTokenValue)
 					.toList();
-			fcmTokenRepository.deleteByTokenValueIn(failedTokenList);
+			jdbcFcmRepository.deleteTokenByTokenValueIn(failedTokenList);
 		}
 
 	}
@@ -83,8 +82,8 @@ public class FCMService {
 			throw new RuntimeException();
 		}
 		if (!failedTokens.isEmpty()) {
-			fcmTokenTopicRepository.deleteByTokenValueIn(failedTokens);
-			fcmTokenRepository.deleteByTokenValueIn(failedTokens);
+			jdbcFcmRepository.deleteTokenTopicByTokenValueIn(failedTokens);
+			jdbcFcmRepository.deleteTokenByTokenValueIn(failedTokens);
 		}
 	}
 	public void unsubscribeFromTopic(String topic, List<String> tokens) {
@@ -101,7 +100,7 @@ public class FCMService {
 			throw new RuntimeException();
 		}
 		if (!failedTokens.isEmpty()) {
-			fcmTokenRepository.deleteByTokenValueIn(failedTokens);
+			jdbcFcmRepository.deleteTokenByTokenValueIn(failedTokens);
 		}
 	}
 }

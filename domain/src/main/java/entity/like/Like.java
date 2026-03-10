@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "likes")
-@AllArgsConstructor
-@Builder
 public class Like {
 
     @Id
@@ -27,6 +25,12 @@ public class Like {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gathering_id")
     private Gathering gathering;
+
+    @Builder
+    private Like(User likedBy, Gathering gathering) {
+        this.likedBy = likedBy;
+        this.gathering = gathering;
+    }
 
     public static Like of(Gathering gathering, User user) {
         return Like.builder()
