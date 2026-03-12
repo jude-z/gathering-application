@@ -16,13 +16,11 @@ import send.handler.StompHandler;
 public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final StompHandler stompHandler;
 
-    @Value("${chat.endpoint}")
-    private String chatEndpoint;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/connect")
-                .setAllowedOrigins(chatEndpoint)
+                .setAllowedOrigins("http://localhost:3000")
                 .withSockJS();
     }
 

@@ -21,11 +21,10 @@ public class SendController {
     private final KafkaProducer kafkaProducer;
     private final IdGenerator idGenerator;
 
-    @MessageMapping("/chatRoom/{chatRoomId}")
+    @MessageMapping("/{chatRoomId}")
     public void sendMessage(@DestinationVariable Long chatRoomId, @Payload ChatMessagePayload chatMessagePayload){
         Event chatMessageEvent = createChatMessageEvent(chatRoomId, chatMessagePayload);
         kafkaProducer.publishEvent(chatMessageEvent);
-
     }
 
     public Event createChatMessageEvent(Long chatRoomId, ChatMessagePayload chatMessagePayload) {
