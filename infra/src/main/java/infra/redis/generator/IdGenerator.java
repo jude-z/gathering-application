@@ -14,7 +14,10 @@ public class IdGenerator {
     @Value("${chat-message-reply.id}")
     private String replyKey;
 
-    public Long nextId(String key){
-        return redisTemplate.opsForValue().increment(key);
+    public Long nextIdForSend(){
+        return redisTemplate.opsForValue().increment(sendKey);
+    }
+    public Long nextIdForReply(){
+        return redisTemplate.opsForValue().increment(replyKey);
     }
 }

@@ -13,3 +13,6 @@ include 'common:util'
 include 'common:page'
 include 'common:fcm'
 include 'common:util'
+
+include 'chat-send-server'
+include 'chat-reply-server'

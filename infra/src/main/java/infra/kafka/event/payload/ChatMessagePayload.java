@@ -16,7 +16,7 @@ public class ChatMessagePayload extends EventPayload {
 
     private EventType type;
     private Long chatRoomId;
-    private String author;
+    private Long publisherId;
     private String content;
     private LocalDateTime createdAt;
 

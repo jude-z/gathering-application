@@ -10,15 +10,21 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Getter
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class ChatMessageCompletePayload extends EventPayload {
 
     private EventType type;
     private Long chatRoomId;
-    private String author;
+    private Long publisherId;
     private String content;
     private LocalDateTime createdAt;
 
+    @Builder
+    private ChatMessageCompletePayload(EventType type, Long chatRoomId, Long publisherId, String content, LocalDateTime createdAt) {
+        this.type = type;
+        this.chatRoomId = chatRoomId;
+        this.publisherId = publisherId;
+        this.content = content;
+        this.createdAt = createdAt;
+    }
 }

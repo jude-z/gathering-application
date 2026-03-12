@@ -20,6 +20,8 @@ public class KafkaProducer {
     private final OutboxRepository outboxRepository;
 
     private final KafkaTemplate<String,String> kafkaTemplate;
+
+
     @Async("publishEventExecutor")
     public void publishEvent(Event<EventPayload> event) {
         try {
