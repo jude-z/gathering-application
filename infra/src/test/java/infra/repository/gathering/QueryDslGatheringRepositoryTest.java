@@ -136,30 +136,10 @@ class QueryDslGatheringRepositoryTest {
     }
 
     @Test
-    void findTopicById() {
+    void findGatheringFetchCreatedBy() {
         saveAll();
 
-        Optional<Gathering> result = queryDslGatheringRepository.findTopicById(gatherings.get(0).getId());
-
-        assertThat(result).isPresent();
-        assertThat(result.get().getTitle()).isEqualTo("title1");
-    }
-
-    @Test
-    void findGatheringFetchCreatedByAndTokensId() {
-        saveAll();
-
-        Optional<Gathering> result = queryDslGatheringRepository.findGatheringFetchCreatedByAndTokensId(gatherings.get(0).getId());
-
-        assertThat(result).isPresent();
-        assertThat(result.get().getCreateBy()).isEqualTo(users.get(0));
-    }
-
-    @Test
-    void findGatheringFetchCreatedAndTopicBy() {
-        saveAll();
-
-        Optional<Gathering> result = queryDslGatheringRepository.findGatheringFetchCreatedAndTopicBy(gatherings.get(0).getId());
+        Optional<Gathering> result = queryDslGatheringRepository.findGatheringFetchCreatedBy(gatherings.get(0).getId());
 
         assertThat(result).isPresent();
         assertThat(result.get().getCreateBy()).isEqualTo(users.get(0));

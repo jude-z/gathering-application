@@ -1,12 +1,12 @@
 package infra.repository.attend;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import util.page.PageInfo;
-import util.page.PageableInfo;
 import infra.repository.dto.querydsl.QueryDslPageResponse;
 import entity.attend.Attend;
 import lombok.RequiredArgsConstructor;
-import util.page.PageCalculator;
+import page.PageCalculator;
+import page.PageInfo;
+import page.PageableInfo;
 
 import java.util.List;
 

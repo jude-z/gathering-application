@@ -1,6 +1,5 @@
 package entity.gathering;
 
-import entity.fcm.Topic;
 import entity.image.Image;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,16 +50,5 @@ class GatheringTest {
         assertThat(gathering.getTitle()).isEqualTo("new title");
         assertThat(gathering.getContent()).isEqualTo("new content");
         assertThat(gathering.getGatheringImage()).isEqualTo(originalImage);
-    }
-
-    @Test
-    @DisplayName("changeTopic - 토픽 변경")
-    void changeTopic() {
-        Gathering gathering = createGathering();
-        Topic topic = Topic.builder().topicName("new-topic").build();
-
-        gathering.changeTopic(topic);
-
-        assertThat(gathering.getTopic()).isEqualTo(topic);
     }
 }

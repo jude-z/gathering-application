@@ -3,7 +3,6 @@ package entity.gathering;
 
 import entity.category.Category;
 import entity.enrollment.Enrollment;
-import entity.fcm.Topic;
 import entity.image.Image;
 import entity.user.User;
 import jakarta.persistence.*;
@@ -47,13 +46,9 @@ public class Gathering {
     @OneToMany(mappedBy = "gathering")
     private List<Enrollment> enrollments;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "topic_id")
-    private Topic topic;
-
     @Builder
     private Gathering(String title, String content, LocalDateTime registerDate, User createBy, int count,
-                     Image gatheringImage, Category category, Topic topic) {
+                     Image gatheringImage, Category category) {
         this.title = title;
         this.content = content;
         this.registerDate = registerDate;
@@ -62,10 +57,6 @@ public class Gathering {
         this.gatheringImage = gatheringImage;
         this.category = category;
         this.enrollments = new ArrayList<>();
-        this.topic = topic;
-    }
-    public void changeTopic(Topic topic){
-        this.topic = topic;
     }
 
     public void change(String title, String content, Image gatheringImage){

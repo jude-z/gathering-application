@@ -53,8 +53,6 @@ public class UserRequestDto {
         private String username;
         @NotBlank(message = "cannot blank or null or space")
         private String password;
-        @NotBlank(message = "cannot blank or null or space")
-        private String fcmToken;
     }
 
     @Data

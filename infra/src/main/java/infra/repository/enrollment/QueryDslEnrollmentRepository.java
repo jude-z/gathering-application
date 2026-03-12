@@ -11,7 +11,6 @@ import java.util.Optional;
 import static entity.enrollment.QEnrollment.*;
 import static entity.gathering.QGathering.*;
 import static entity.user.QUser.*;
-import static entity.fcm.QFCMToken.*;
 
 @RequiredArgsConstructor
 public class QueryDslEnrollmentRepository {
@@ -29,7 +28,6 @@ public class QueryDslEnrollmentRepository {
         return Optional.ofNullable(
                 queryFactory.selectFrom(enrollment)
                         .join(enrollment.enrolledBy, user).fetchJoin()
-                        .leftJoin(user.tokens, fCMToken).fetchJoin()
                         .where(
                                 enrollment.gathering.id.eq(gatheringId),
                                 user.id.eq(userId),
@@ -42,7 +40,6 @@ public class QueryDslEnrollmentRepository {
         return Optional.ofNullable(
                 queryFactory.selectFrom(enrollment)
                         .leftJoin(enrollment.enrolledBy, user).fetchJoin()
-                        .leftJoin(user.tokens, fCMToken).fetchJoin()
                         .where(
                                 enrollment.id.eq(enrollmentId),
                                 enrollment.accepted.eq(false))

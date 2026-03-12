@@ -1,12 +1,9 @@
 package entity.user;
 
-import entity.fcm.FCMToken;
 import entity.image.Image;
 import jakarta.persistence.*;
 import lombok.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Getter
@@ -30,8 +27,6 @@ public class User implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "image_id")
     private Image profileImage;
-    @OneToMany(mappedBy = "user")
-    private List<FCMToken> tokens;
     private String refreshToken;
 
     public void changeProfileImage(Image profileImage){
@@ -59,7 +54,6 @@ public class User implements Serializable {
         this.role = role;
         this.nickname = nickname;
         this.profileImage = profileImage;
-        this.tokens = new ArrayList<>();
         this.refreshToken = refreshToken;
     }
 

@@ -12,7 +12,6 @@ import infra.repository.dto.querydsl.meeting.MeetingProjection;
 import infra.repository.dto.querydsl.meeting.MeetingsProjection;
 import entity.alarm.Alarm;
 import entity.attend.Attend;
-import entity.fcm.Topic;
 import entity.gathering.Gathering;
 import entity.image.Image;
 import entity.meeting.Meeting;
@@ -38,7 +37,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static api.requeset.fcm.FcmRequestDto.*;
 import static api.requeset.meeting.MeetingRequestDto.*;
 import static api.response.meeting.MeetingResponseDto.*;
 import static exception.Status.*;
@@ -64,7 +62,7 @@ public class MeetingService {
 
             User user = userRepository.findById(userId)
                     .orElseThrow(()->new CommonException(NOT_FOUND_USER));
-            Gathering gathering = queryDslGatheringRepository.findTopicById(gatheringId)
+            Gathering gathering = queryDslGatheringRepository.findGatheringFetchCreatedBy(gatheringId)
                     .orElseThrow(() -> new CommonException(NOT_FOUND_GATHERING));
             Image image = null;
             image = saveImage(image,file);
@@ -73,10 +71,6 @@ public class MeetingService {
             if(image!=null) imageRepository.save(image);
             meetingRepository.save(meeting);
             attendRepository.save(attend);
-            Topic topic = gathering.getTopic();
-            String title = "Meeting Created";
-            String content = "%s has created a new meeting".formatted(user.getNickname());
-            TopicNotificationRequestDto topicNotificationRequestDto = TopicNotificationRequestDto.from(title, content, topic);
             List<User> userList = queryDslUserRepository.findEnrollmentById(gatheringId,userId).getContent();
             String alarmContent = "%s has created a new meeting".formatted(user.getNickname());
             List<Alarm> list = getAlarmList(userList,alarmContent);
@@ -101,7 +95,7 @@ public class MeetingService {
 
             User user = userRepository.findById(userId)
                     .orElseThrow(()->new CommonException(NOT_FOUND_USER));
-            Gathering gathering = queryDslGatheringRepository.findTopicById(gatheringId)
+            Gathering gathering = queryDslGatheringRepository.findGatheringFetchCreatedBy(gatheringId)
                     .orElseThrow(() -> new CommonException(NOT_FOUND_GATHERING));
             Meeting meeting = meetingRepository.findById(meetingId)
                     .orElseThrow(()->new CommonException(NOT_FOUND_MEETING));
@@ -111,10 +105,6 @@ public class MeetingService {
             image = saveImage(image,file);
             if(image!=null) imageRepository.save(image);
             if(!meeting.getMeetingDate().equals(updateMeetingRequest.getMeetingDate())){
-                Topic topic = gathering.getTopic();
-                String title = "Meeting Updated";
-                String content = "%s has changed meeting date : %s".formatted(user.getNickname(),meeting.getMeetingDate());
-                TopicNotificationRequestDto topicNotificationRequestDto = TopicNotificationRequestDto.from(title, content, topic);
                 List<User> userList = queryDslUserRepository.findEnrollmentById(gatheringId, userId).getContent();
                 String alarmContent = "%s has changed meeting date : %s".formatted(user.getNickname(),meeting.getMeetingDate());
                 List<Alarm> alarmList = getAlarmList(userList, alarmContent);

@@ -2,7 +2,6 @@ package api.controller.user;
 
 import api.common.resolver.annotation.Username;
 import api.response.ApiResponse;
-import api.service.fcm.FCMTokenTopicService;
 import api.service.user.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,6 @@ import static api.requeset.user.UserRequestDto.*;
 public class UserController {
 
     private final UserService userService;
-    private final FCMTokenTopicService fcmTokenTopicService;
 
     @PostMapping("/auth/id-check")
     public ResponseEntity<ApiResponse> idCheck(@RequestBody IdCheckRequest idCheckRequest) {
@@ -65,7 +63,6 @@ public class UserController {
     @PostMapping("/auth/sign-in")
     public ResponseEntity<ApiResponse> signIn(@RequestBody SignInRequest signInRequest, HttpServletResponse response) {
         ApiResponse apiResponse = userService.signIn(signInRequest, response);
-        fcmTokenTopicService.saveFCMToken(signInRequest);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 

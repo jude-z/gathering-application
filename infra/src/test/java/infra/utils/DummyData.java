@@ -10,9 +10,6 @@ import entity.chat.ChatParticipant;
 import entity.chat.ChatRoom;
 import entity.chat.ReadStatus;
 import entity.enrollment.Enrollment;
-import entity.fcm.FCMToken;
-import entity.fcm.Topic;
-import entity.fcm.UserTopic;
 import entity.gathering.Gathering;
 import entity.image.Image;
 import entity.like.Like;
@@ -159,28 +156,6 @@ public class DummyData {
                 .chatParticipant(chatParticipant)
                 .chatMessage(chatMessage)
                 .status(false)
-                .build();
-    }
-
-    public static FCMToken returnDummyFCMToken(User user, String tokenValue, int months) {
-        return FCMToken.builder()
-                .tokenValue(tokenValue)
-                .expirationDate(LocalDate.now().plusMonths(months))
-                .user(user)
-                .build();
-    }
-
-    public static Topic returnDummyTopic(String topicName, Gathering gathering) {
-        return Topic.builder()
-                .topicName(topicName)
-                .gathering(gathering)
-                .build();
-    }
-
-    public static UserTopic returnDummyUserTopic(Topic topic, User user) {
-        return UserTopic.builder()
-                .topic(topic)
-                .user(user)
                 .build();
     }
 

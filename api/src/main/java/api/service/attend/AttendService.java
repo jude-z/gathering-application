@@ -3,10 +3,8 @@ package api.service.attend;
 import api.common.mapper.AttendMapper;
 import api.response.ApiResponse;
 import api.response.ApiStatusResponse;
-import util.page.PageableInfo;
 import infra.repository.dto.querydsl.QueryDslPageResponse;
 import entity.attend.Attend;
-import entity.fcm.Topic;
 import entity.gathering.Gathering;
 import entity.meeting.Meeting;
 import entity.user.User;
@@ -20,9 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import infra.repository.attend.QueryDslAttendRepository;
 import infra.repository.gathering.QueryDslGatheringRepository;
-import util.page.PageCalculator;
+import page.PageCalculator;
+import page.PageableInfo;
 
-import static api.requeset.fcm.FcmRequestDto.*;
 import static exception.Status.*;
 
 
@@ -41,7 +39,7 @@ public class AttendService {
         public ApiResponse addAttend(Long meetingId, Long userId, Long gatheringId) {
                 User user = userRepository.findById(userId)
                         .orElseThrow(()->new CommonException(NOT_FOUND_USER));
-                Gathering gathering = queryDslGatheringRepository.findTopicById(gatheringId)
+                Gathering gathering = queryDslGatheringRepository.findGatheringFetchCreatedBy(gatheringId)
                         .orElseThrow(() -> new CommonException(NOT_FOUND_GATHERING));
                 Meeting meeting = meetingRepository.findById(meetingId)
                         .orElseThrow(()->new CommonException(NOT_FOUND_MEETING));
@@ -51,11 +49,6 @@ public class AttendService {
                 Attend attend = AttendMapper.toAttend(meeting, user);
                 attendRepository.save(attend);
                 jdbcMeetingRepository.updateCount(meetingId,1);
-                Topic topic = gathering.getTopic();
-                String title = "Board created";
-                String content = "%s has created board".formatted(user.getNickname());
-                TopicNotificationRequestDto topicNotificationRequestDto = TopicNotificationRequestDto.from(title,content,topic);
-                //TODO : kafka producer(topic 알림)
                 return ApiStatusResponse.of(SUCCESS);
         }
 

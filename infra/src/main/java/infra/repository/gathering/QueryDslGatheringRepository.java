@@ -18,8 +18,6 @@ import java.util.Optional;
 
 import static entity.category.QCategory.*;
 import static entity.enrollment.QEnrollment.*;
-import static entity.fcm.QFCMToken.*;
-import static entity.fcm.QTopic.*;
 import static entity.gathering.QGathering.*;
 import static entity.image.QImage.*;
 import static entity.like.QLike.*;
@@ -156,36 +154,12 @@ public class QueryDslGatheringRepository {
         return QueryDslPageResponse.of(content, pageInfo);
     }
 
-    // === findTopicById ===
+    // === findGatheringFetchCreatedBy ===
 
-    public Optional<Gathering> findTopicById(Long gatheringId) {
-        return Optional.ofNullable(
-                queryFactory.selectFrom(gathering)
-                        .leftJoin(gathering.topic, topic).fetchJoin()
-                        .where(gathering.id.eq(gatheringId))
-                        .fetchOne()
-        );
-    }
-
-    // === findGatheringFetchCreatedByAndTokensId ===
-
-    public Optional<Gathering> findGatheringFetchCreatedByAndTokensId(Long gatheringId) {
+    public Optional<Gathering> findGatheringFetchCreatedBy(Long gatheringId) {
         return Optional.ofNullable(
                 queryFactory.selectFrom(gathering)
                         .leftJoin(gathering.createBy, user).fetchJoin()
-                        .leftJoin(user.tokens, fCMToken).fetchJoin()
-                        .where(gathering.id.eq(gatheringId))
-                        .fetchOne()
-        );
-    }
-
-    // === findGatheringFetchCreatedAndTopicBy ===
-
-    public Optional<Gathering> findGatheringFetchCreatedAndTopicBy(Long gatheringId) {
-        return Optional.ofNullable(
-                queryFactory.selectFrom(gathering)
-                        .leftJoin(gathering.createBy, user).fetchJoin()
-                        .leftJoin(gathering.topic, topic).fetchJoin()
                         .where(gathering.id.eq(gatheringId))
                         .fetchOne()
         );

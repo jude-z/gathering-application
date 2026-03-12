@@ -1,9 +1,9 @@
 package infra.repository.dto.querydsl;
 
 
-import util.page.PageInfo;
 import lombok.Builder;
 import lombok.Getter;
+import page.PageInfo;
 
 import java.util.List;
 

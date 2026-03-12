@@ -5,7 +5,6 @@ import api.common.mapper.EnrollmentMapper;
 import api.common.mapper.GatheringMapper;
 import api.response.ApiDataResponse;
 import api.response.ApiResponse;
-import api.service.fcm.FCMTokenTopicService;
 import api.service.image.ImageUploadService;
 import util.page.PageableInfo;
 import infra.repository.dto.jdbc.gathering.GatheringDetailProjection;
@@ -14,7 +13,6 @@ import infra.repository.dto.querydsl.gathering.GatheringsProjection;
 import infra.repository.dto.querydsl.gathering.ParticipatedProjection;
 import entity.category.Category;
 import entity.enrollment.Enrollment;
-import entity.fcm.Topic;
 import entity.gathering.Gathering;
 import entity.image.Image;
 import entity.user.User;
@@ -23,7 +21,6 @@ import exception.Status;
 import infra.repository.gathering.JdbcGatheringRepository;
 import infra.repository.category.CategoryRepository;
 import infra.repository.enrollment.EnrollmentRepository;
-import infra.repository.fcm.TopicRepository;
 import infra.repository.gathering.GatheringRepository;
 import infra.repository.image.ImageRepository;
 import infra.repository.user.UserRepository;
@@ -46,8 +43,6 @@ import java.util.stream.Collectors;
 
 import static api.requeset.gathering.GatheringRequestDto.*;
 import static api.response.gathering.GatheringResponseDto.*;
-import static util.TopicGenerator.generateTopic;
-
 
 @Service
 @Transactional
@@ -59,12 +54,10 @@ public class GatheringService {
     private final ImageRepository imageRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
-    private final TopicRepository topicRepository;
     private final QueryDslCategoryRepository queryDslCategoryRepository;
     private final QueryDslGatheringRepository queryDslGatheringRepository;
     private final JdbcGatheringRepository jdbcGatheringRepository;
     private final ImageUploadService imageUploadService;
-    private final FCMTokenTopicService fcmTokenTopicService;
     @Value("${file.path}")
     private String path;
 
@@ -81,13 +74,9 @@ public class GatheringService {
             Gathering gathering = GatheringMapper.toGathering(addGatheringRequest,user,image,category);
             Enrollment enrollment = EnrollmentMapper.toEnrollment(true, gathering, user);
             if(image!=null) imageRepository.save(image);
-            Topic topic = generateTopic(gathering);
-            gathering.changeTopic(topic);
             gatheringRepository.save(gathering);
             categoryRepository.save(category);
-            topicRepository.save(topic);
             enrollmentRepository.save(enrollment);
-            fcmTokenTopicService.subscribeToTopic(topic.getTopicName(),userId);
             return ApiDataResponse.of(gathering.getId(),Status.SUCCESS);
     }
 
@@ -97,7 +86,7 @@ public class GatheringService {
                     .orElseThrow(()->new CommonException(Status.NOT_FOUND_USER));
             Category category = queryDslCategoryRepository.findBy(gatheringId, updateGatheringRequest.getCategory())
                     .orElseThrow(()-> new CommonException(Status.NOT_FOUND_CATEGORY));
-            Gathering gathering = queryDslGatheringRepository.findGatheringFetchCreatedByAndTokensId(gatheringId)
+            Gathering gathering = queryDslGatheringRepository.findGatheringFetchCreatedBy(gatheringId)
                     .orElseThrow(()->new CommonException(Status.NOT_FOUND_GATHERING));
             User createBy = gathering.getCreateBy();
             boolean authorize = ObjectUtils.nullSafeEquals(createBy.getId(),userId);

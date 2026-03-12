@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @EntityScan(basePackages = {
         "entity.alarm", "entity.attend", "entity.board", "entity.category",
-        "entity.certification", "entity.chat", "entity.enrollment", "entity.fcm",
+        "entity.certification", "entity.chat", "entity.enrollment",
         "entity.gathering", "entity.image", "entity.like", "entity.meeting",
         "entity.recommend", "entity.user"
 })
