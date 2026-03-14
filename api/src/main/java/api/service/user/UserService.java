@@ -110,7 +110,6 @@ public class UserService {
         PageableInfo pageableInfo = PageCalculator.toDefaultPageableInfo();
         QueryDslPageResponse<User> queryDslPageResponse = queryDslUserRepository.findByEmail(pageableInfo,emailCertificationRequest.getEmail());
         if(!queryDslPageResponse.isEmpty()) throw new CommonException(DUPLICATE_EMAIL);
-        //TODO: Kafka Producer
         return ApiStatusResponse.of(SUCCESS);
     }
 

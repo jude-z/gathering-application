@@ -8,8 +8,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class UserTest {
 
-    private User createUser() {
-        return User.builder()
+    @Test
+    @DisplayName("Builder로 User 정상 생성")
+    void builder_정상_생성() {
+        User user = User.builder()
                 .username("testUser")
                 .password("password123")
                 .email("test@test.com")
@@ -18,24 +20,34 @@ class UserTest {
                 .hobby("coding")
                 .role(Role.USER)
                 .nickname("tester")
+                .refreshToken("token123")
                 .build();
+
+        assertThat(user.getUsername()).isEqualTo("testUser");
+        assertThat(user.getPassword()).isEqualTo("password123");
+        assertThat(user.getEmail()).isEqualTo("test@test.com");
+        assertThat(user.getAddress()).isEqualTo("Seoul");
+        assertThat(user.getAge()).isEqualTo(25);
+        assertThat(user.getHobby()).isEqualTo("coding");
+        assertThat(user.getRole()).isEqualTo(Role.USER);
+        assertThat(user.getNickname()).isEqualTo("tester");
+        assertThat(user.getRefreshToken()).isEqualTo("token123");
+        assertThat(user.getProfileImage()).isNull();
     }
 
     @Test
-    @DisplayName("changeProfileImage - 프로필 이미지 변경")
-    void changeProfileImage() {
-        User user = createUser();
-        Image newImage = Image.builder().url("new-image.png").contentType("image/png").build();
-
-        user.changeProfileImage(newImage);
-
-        assertThat(user.getProfileImage()).isEqualTo(newImage);
-    }
-
-    @Test
-    @DisplayName("change - 사용자 정보 일괄 변경")
-    void change() {
-        User user = createUser();
+    @DisplayName("change() 호출 시 사용자 정보 변경")
+    void change_사용자_정보_변경() {
+        User user = User.builder()
+                .username("testUser")
+                .password("oldPassword")
+                .email("old@test.com")
+                .address("Seoul")
+                .age(25)
+                .hobby("coding")
+                .role(Role.USER)
+                .nickname("oldNick")
+                .build();
 
         user.change("newPassword", "new@test.com", "Busan", 30, "reading", "newNick");
 
@@ -48,18 +60,23 @@ class UserTest {
     }
 
     @Test
-    @DisplayName("change - 기존 값과 무관하게 새 값으로 덮어씀")
-    void change_overwritesAllFields() {
-        User user = createUser();
+    @DisplayName("changeProfileImage() 호출 시 프로필 이미지 변경")
+    void changeProfileImage_프로필_이미지_변경() {
+        User user = User.builder()
+                .username("testUser")
+                .password("password")
+                .email("test@test.com")
+                .role(Role.USER)
+                .nickname("tester")
+                .build();
 
-        user.change("pw1", "e1@test.com", "addr1", 20, "h1", "n1");
-        user.change("pw2", "e2@test.com", "addr2", 40, "h2", "n2");
+        Image image = Image.builder()
+                .url("https://example.com/image.jpg")
+                .contentType("image/jpeg")
+                .build();
 
-        assertThat(user.getPassword()).isEqualTo("pw2");
-        assertThat(user.getEmail()).isEqualTo("e2@test.com");
-        assertThat(user.getAddress()).isEqualTo("addr2");
-        assertThat(user.getAge()).isEqualTo(40);
-        assertThat(user.getHobby()).isEqualTo("h2");
-        assertThat(user.getNickname()).isEqualTo("n2");
+        user.changeProfileImage(image);
+
+        assertThat(user.getProfileImage()).isEqualTo(image);
     }
 }
