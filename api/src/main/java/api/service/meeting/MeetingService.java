@@ -6,7 +6,6 @@ import api.response.ApiDataResponse;
 import api.response.ApiResponse;
 import api.service.alarm.AlarmService;
 import api.service.image.ImageUploadService;
-import util.page.PageableInfo;
 import infra.repository.dto.querydsl.QueryDslPageResponse;
 import infra.repository.dto.querydsl.meeting.MeetingProjection;
 import infra.repository.dto.querydsl.meeting.MeetingsProjection;
@@ -31,7 +30,8 @@ import org.springframework.web.multipart.MultipartFile;
 import infra.repository.gathering.QueryDslGatheringRepository;
 import infra.repository.meeting.QueryDslMeetingRepository;
 import infra.repository.user.QueryDslUserRepository;
-import util.page.PageCalculator;
+import page.PageCalculator;
+import page.PageableInfo;
 
 import java.io.IOException;
 import java.time.LocalDateTime;

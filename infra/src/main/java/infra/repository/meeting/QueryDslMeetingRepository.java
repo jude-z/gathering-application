@@ -2,21 +2,23 @@ package infra.repository.meeting;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import util.page.PageInfo;
-import util.page.PageableInfo;
+import page.PageInfo;
+import page.PageableInfo;
 import infra.repository.dto.querydsl.QueryDslPageResponse;
 import infra.repository.dto.querydsl.meeting.MeetingProjection;
 import infra.repository.dto.querydsl.meeting.MeetingsProjection;
 import entity.image.QImage;
 import entity.user.QUser;
 import lombok.RequiredArgsConstructor;
-import util.page.PageCalculator;
+import org.springframework.stereotype.Repository;
+import page.PageCalculator;
 
 import java.util.List;
 
 import static entity.attend.QAttend.*;
 import static entity.meeting.QMeeting.*;
 
+@Repository
 @RequiredArgsConstructor
 public class QueryDslMeetingRepository {
     private final JPAQueryFactory queryFactory;

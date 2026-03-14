@@ -2,11 +2,11 @@ package api.response.chat;
 
 import entity.chat.ChatRoom;
 import entity.user.User;
+import infra.repository.dto.querydsl.chat.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import response.chat.query.*;
 
 import java.util.List;
 
@@ -57,9 +57,9 @@ public class ChatResponseDto {
     public static class ChatMessagesResponse {
         private String code;
         private String message;
-        private List<ChatMessageElement> content;
+        private List<ChatMessageProjection> content;
 
-        public static ChatMessagesResponse of(String code, String message, List<ChatMessageElement> content) {
+        public static ChatMessagesResponse of(String code, String message, List<ChatMessageProjection> content) {
             return new ChatMessagesResponse(code, message, content);
         }
     }
@@ -83,10 +83,10 @@ public class ChatResponseDto {
     public static class MyChatRoomResponse {
         private String code;
         private String message;
-        private List<MyChatRoomElement> content;
+        private List<MyChatRoomProjection> content;
         private boolean hasNext;
 
-        public static MyChatRoomResponse of(String code, String message, List<MyChatRoomElement> content, boolean hasNext) {
+        public static MyChatRoomResponse of(String code, String message, List<MyChatRoomProjection> content, boolean hasNext) {
             return new MyChatRoomResponse(code, message, content, hasNext);
         }
     }
@@ -98,10 +98,10 @@ public class ChatResponseDto {
     public static class ChatRoomResponse {
         private String code;
         private String message;
-        private List<ChatRoomElement> content;
+        private List<ChatRoomProjection> content;
         private boolean hasNext;
 
-        public static ChatRoomResponse of(String code, String message, List<ChatRoomElement> content, boolean hasNext) {
+        public static ChatRoomResponse of(String code, String message, List<ChatRoomProjection> content, boolean hasNext) {
             return new ChatRoomResponse(code, message, content, hasNext);
         }
     }
@@ -113,10 +113,10 @@ public class ChatResponseDto {
     public static class AbleChatRoomResponse {
         private String code;
         private String message;
-        private List<AbleChatRoomElement> content;
+        private List<AbleChatRoomProjection> content;
         private boolean hasNext;
 
-        public static AbleChatRoomResponse of(String code, String message, List<AbleChatRoomElement> content, boolean hasNext) {
+        public static AbleChatRoomResponse of(String code, String message, List<AbleChatRoomProjection> content, boolean hasNext) {
             return new AbleChatRoomResponse(code, message, content, hasNext);
         }
     }
@@ -128,10 +128,10 @@ public class ChatResponseDto {
     public static class ParticipateChatRoomResponse {
         private String code;
         private String message;
-        private List<ParticipateChatRoomElement> content;
+        private List<ParticipateChatRoomProjection> content;
         private boolean hasNext;
 
-        public static ParticipateChatRoomResponse of(String code, String message, List<ParticipateChatRoomElement> content, boolean hasNext) {
+        public static ParticipateChatRoomResponse of(String code, String message, List<ParticipateChatRoomProjection> content, boolean hasNext) {
             return new ParticipateChatRoomResponse(code, message, content, hasNext);
         }
     }
@@ -171,11 +171,11 @@ public class ChatResponseDto {
         public static class FetchParticipantResponse {
             private String code;
             private String message;
-            private List<ParticipantElement> content;
+            private List<ParticipantProjection> content;
             private boolean hasNext;
 
 
-            public static FetchParticipantResponse of(String code, String message, List<ParticipantElement> content, boolean hasNext) {
+            public static FetchParticipantResponse of(String code, String message, List<ParticipantProjection> content, boolean hasNext) {
                 return new FetchParticipantResponse(code, message, content, hasNext);
             }
 

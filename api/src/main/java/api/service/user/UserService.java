@@ -5,8 +5,6 @@ import api.response.ApiDataResponse;
 import api.response.ApiResponse;
 import api.response.ApiStatusResponse;
 import api.service.image.ImageUploadService;
-import common.ImageUrlConverter;
-import util.page.PageableInfo;
 import infra.repository.dto.querydsl.QueryDslPageResponse;
 import entity.image.Image;
 import entity.user.User;
@@ -23,7 +21,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import infra.repository.certification.QueryDslCertificationRepository;
 import infra.repository.user.QueryDslUserRepository;
-import util.page.PageCalculator;
+import page.PageCalculator;
+import page.PageableInfo;
+import util.ImageUrlConverter;
 
 import java.io.IOException;
 

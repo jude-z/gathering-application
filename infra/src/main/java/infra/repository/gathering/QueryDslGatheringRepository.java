@@ -2,15 +2,16 @@ package infra.repository.gathering;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import util.page.PageInfo;
-import util.page.PageableInfo;
+import page.PageInfo;
+import page.PageableInfo;
 import infra.repository.dto.querydsl.QueryDslPageResponse;
 import infra.repository.dto.querydsl.gathering.GatheringsProjection;
 import infra.repository.dto.querydsl.gathering.ParticipatedProjection;
 import entity.gathering.Gathering;
 import entity.user.QUser;
 import lombok.RequiredArgsConstructor;
-import util.page.PageCalculator;
+import org.springframework.stereotype.Repository;
+import page.PageCalculator;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,6 +25,7 @@ import static entity.like.QLike.*;
 import static entity.recommend.QRecommend.*;
 import static entity.user.QUser.*;
 
+@Repository
 @RequiredArgsConstructor
 public class QueryDslGatheringRepository {
     private final JPAQueryFactory queryFactory;

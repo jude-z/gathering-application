@@ -5,7 +5,7 @@ import entity.category.Category;
 import entity.gathering.Gathering;
 import entity.image.Image;
 import entity.user.User;
-import common.ImageUrlProcess;
+import util.ImageUrlProcess;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

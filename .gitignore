@@ -42,3 +42,5 @@ out/
 /src/test/resources/application.yml
 /src/test/resources/application-aws.yml
 /src/main/resources/firebase
+/chat-reply-server/src/main/resources/application.yml
+/chat-send-server/src/main/resources/application.yml

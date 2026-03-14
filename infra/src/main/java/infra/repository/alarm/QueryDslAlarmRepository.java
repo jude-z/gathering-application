@@ -1,18 +1,20 @@
 package infra.repository.alarm;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import util.page.PageInfo;
-import util.page.PageableInfo;
+import page.PageInfo;
+import page.PageableInfo;
 import infra.repository.dto.querydsl.QueryDslPageResponse;
 import entity.alarm.Alarm;
 import lombok.RequiredArgsConstructor;
-import util.page.PageCalculator;
+import org.springframework.stereotype.Repository;
+import page.PageCalculator;
 
 import java.util.List;
 
 import static entity.alarm.QAlarm.*;
 import static entity.user.QUser.*;
 
+@Repository
 @RequiredArgsConstructor
 public class QueryDslAlarmRepository {
 

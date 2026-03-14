@@ -3,4 +3,6 @@ dependencies {
     implementation project(':domain')
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     testImplementation 'com.h2database:h2'
+    implementation 'org.springframework.boot:spring-boot-docker-compose'
+
 }

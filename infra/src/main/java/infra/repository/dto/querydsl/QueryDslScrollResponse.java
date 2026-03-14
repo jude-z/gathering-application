@@ -1,7 +1,7 @@
 package infra.repository.dto.querydsl;
 
 
-import util.page.ScrollInfo;
+import page.ScrollInfo;
 import lombok.Builder;
 import lombok.Getter;
 

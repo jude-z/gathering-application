@@ -1,6 +1,10 @@
+bootJar { enabled = false }
+jar { enabled = true }
+
 dependencies {
     implementation project(':domain')
     implementation project(':common:page')
+    implementation project(':common:util')
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     testImplementation 'com.h2database:h2'
 }

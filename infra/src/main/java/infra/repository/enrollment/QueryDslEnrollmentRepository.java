@@ -5,6 +5,7 @@ import entity.enrollment.Enrollment;
 import entity.gathering.Gathering;
 import entity.user.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
@@ -12,6 +13,7 @@ import static entity.enrollment.QEnrollment.*;
 import static entity.gathering.QGathering.*;
 import static entity.user.QUser.*;
 
+@Repository
 @RequiredArgsConstructor
 public class QueryDslEnrollmentRepository {
     private final JPAQueryFactory queryFactory;

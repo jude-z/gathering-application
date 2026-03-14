@@ -59,8 +59,8 @@ public class ChatController {
     }
 
     @GetMapping("/messages/{chatId}")
-    public ResponseEntity<ApiResponse> fetchMessages(@PathVariable Long chatId, @Username Long userId){
-        ApiResponse apiResponse = chatService.fetchUnReadMessages(chatId, userId);
+    public ResponseEntity<ApiResponse> fetchMessages(@PathVariable Long chatId, @RequestParam Integer pageNum, @RequestParam Integer pageSize, @Username Long userId){
+        ApiResponse apiResponse = chatService.fetchUnReadMessages(chatId, pageNum,pageSize,userId);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 

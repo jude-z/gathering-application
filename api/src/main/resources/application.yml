@@ -1,4 +1,53 @@
+server:
+  port: 8080
+  url: http://localhost:8080
+
 spring:
-  docker:
-    compose:
-      file: api/compose.yml
+  datasource:
+    url: jdbc:mysql://localhost:3306/gathering
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+    show-sql: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+jwt:
+  secretKey: dGhpc0lzQVNlY3JldEtleUZvckp3dFRva2VuVGVzdGluZzEyMzQ1Njc4OTA=
+  access:
+    expiration: 3600000
+  refresh:
+    expiration: 604800000
+
+s3:
+  credentials:
+    access-key: your-access-key
+    secret-key: your-secret-key
+    region: ap-northeast-2
+  bucket: your-bucket-name
+
+file:
+  path: /images
+
+path: /images
+
+chat-message-send:
+  id: chat-message-send-id
+
+chat-message-reply:
+  id: chat-message-reply-id

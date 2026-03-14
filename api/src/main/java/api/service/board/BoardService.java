@@ -3,7 +3,6 @@ package api.service.board;
 import api.response.ApiDataResponse;
 import api.response.ApiResponse;
 import api.service.image.ImageUploadService;
-import util.page.PageableInfo;
 import infra.repository.dto.querydsl.QueryDslPageResponse;
 import infra.repository.dto.querydsl.board.BoardProjection;
 import infra.repository.dto.querydsl.board.BoardsProjection;
@@ -25,7 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import infra.repository.board.QueryDslBoardRepository;
-import util.page.PageCalculator;
+import page.PageCalculator;
+import page.PageableInfo;
 
 import java.io.IOException;
 import java.util.ArrayList;

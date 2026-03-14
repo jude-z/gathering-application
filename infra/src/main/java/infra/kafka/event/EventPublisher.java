@@ -5,8 +5,10 @@ import infra.kafka.event.payload.ChatMessagePayload;
 import infra.redis.generator.IdGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
+@Component
 public class EventPublisher {
 
     private final ApplicationEventPublisher eventPublisher;

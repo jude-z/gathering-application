@@ -1,17 +1,19 @@
 package infra.repository.image;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import util.page.PageInfo;
-import util.page.PageableInfo;
+import page.PageInfo;
+import page.PageableInfo;
 import infra.repository.dto.querydsl.QueryDslPageResponse;
 import lombok.RequiredArgsConstructor;
-import util.page.PageCalculator;
+import org.springframework.stereotype.Repository;
+import page.PageCalculator;
 
 import java.util.List;
 
 import static entity.image.QImage.*;
 import static entity.gathering.QGathering.*;
 
+@Repository
 @RequiredArgsConstructor
 public class QueryDslImageRepository {
     private final JPAQueryFactory queryFactory;

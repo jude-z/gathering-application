@@ -3,12 +3,14 @@ package infra.repository.category;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import entity.category.Category;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 import static entity.category.QCategory.*;
 import static entity.gathering.QGathering.*;
 
+@Repository
 @RequiredArgsConstructor
 public class QueryDslCategoryRepository {
     private final JPAQueryFactory queryFactory;

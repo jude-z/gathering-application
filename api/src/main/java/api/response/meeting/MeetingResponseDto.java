@@ -68,19 +68,6 @@ public class MeetingResponseDto {
         private String content;
         private String meetingUrl;
 
-        public static MeetingResponse of(String code, String message, List<MeetingDetailQuery> meetingDetailQueries, List<String> attends, String url){
-            return MeetingResponse.builder()
-                    .id(meetingDetailQueries.getLast().getId())
-                    .title(meetingDetailQueries.getFirst().getTitle())
-                    .content(meetingDetailQueries.getFirst().getContent())
-                    .meetingDate(meetingDetailQueries.getFirst().getMeetingDate())
-                    .endDate(meetingDetailQueries.getFirst().getEndDate())
-                    .endDate(meetingDetailQueries.getFirst().getEndDate())
-                    .createdBy(meetingDetailQueries.getFirst().getCreatedBy())
-                    .attendedBy(attends)
-                    .meetingUrl(url)
-                    .build();
-        }
     }
 
     @Data

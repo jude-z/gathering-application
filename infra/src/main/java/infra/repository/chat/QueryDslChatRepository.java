@@ -7,8 +7,8 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import infra.repository.dto.querydsl.chat.*;
-import util.page.PageInfo;
-import util.page.PageableInfo;
+import page.PageInfo;
+import page.PageableInfo;
 import infra.repository.dto.querydsl.QueryDslPageResponse;
 import entity.chat.ChatRoom;
 import entity.chat.QChatMessage;
@@ -18,7 +18,8 @@ import entity.chat.QReadStatus;
 import entity.gathering.QGathering;
 import entity.user.QUser;
 import lombok.RequiredArgsConstructor;
-import util.page.PageCalculator;
+import org.springframework.stereotype.Repository;
+import page.PageCalculator;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,6 +31,7 @@ import static entity.chat.QReadStatus.*;
 import static entity.image.QImage.*;
 import static entity.user.QUser.*;
 
+@Repository
 @RequiredArgsConstructor
 public class QueryDslChatRepository {
     private final JPAQueryFactory queryFactory;

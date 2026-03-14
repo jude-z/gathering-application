@@ -8,9 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class KafkaSendConsumer {
     private final SimpMessageSendingOperations messageSendingOperations;

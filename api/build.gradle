@@ -2,4 +2,7 @@ dependencies {
     implementation project(':domain')
     implementation project(':infra')
     implementation project(':common:page')
+    implementation project(':common:util')
+    implementation 'org.springframework.boot:spring-boot-docker-compose'
+
 }

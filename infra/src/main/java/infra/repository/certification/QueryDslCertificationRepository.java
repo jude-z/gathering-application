@@ -3,9 +3,11 @@ package infra.repository.certification;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import entity.certification.QCertification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 import static entity.certification.QCertification.*;
 
+@Repository
 @RequiredArgsConstructor
 public class QueryDslCertificationRepository {
     private final JPAQueryFactory queryFactory;

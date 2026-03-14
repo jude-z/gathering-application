@@ -30,7 +30,6 @@ public class BoardRequestDto {
                     .user(user)
                     .gathering(gathering)
                     .registerDate(LocalDateTime.now())
-                    .images(new ArrayList<>())
                     .build();
         }
     }

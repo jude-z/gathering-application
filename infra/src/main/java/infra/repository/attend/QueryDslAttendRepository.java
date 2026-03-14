@@ -4,6 +4,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import infra.repository.dto.querydsl.QueryDslPageResponse;
 import entity.attend.Attend;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 import page.PageCalculator;
 import page.PageInfo;
 import page.PageableInfo;
@@ -14,6 +15,7 @@ import static entity.attend.QAttend.*;
 import static entity.meeting.QMeeting.*;
 import static entity.user.QUser.*;
 
+@Repository
 @RequiredArgsConstructor
 public class QueryDslAttendRepository {
     private final JPAQueryFactory queryFactory;

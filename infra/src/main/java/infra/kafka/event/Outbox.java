@@ -7,12 +7,12 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Table(name = "outbox")
 @Getter
 @Entity
 @NoArgsConstructor
 public class Outbox {
     @Id
+    @Column(name = "outbox_id")
     private Long outboxId;
     @Enumerated(EnumType.STRING)
     private EventType eventType;
@@ -33,7 +33,7 @@ public class Outbox {
 
         EventType eventType = event.getType();
         EventPayload payload = event.getPayload();
-        Long eventId = event.getEventId();
+        Long eventId = payload.getEventId();
         String serializedPayload = DataSerializer.serialize(payload);
 
         return Outbox.builder()
